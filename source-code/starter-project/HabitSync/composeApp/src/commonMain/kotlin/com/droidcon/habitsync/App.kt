@@ -1,42 +1,45 @@
 package com.droidcon.habitsync
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import com.droidcon.habitsync.db.User
-import com.droidcon.habitsync.db.UserQueries
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-// Define preference keys
-val COUNT_KEY = intPreferencesKey("count")
-val TEXT_KEY = stringPreferencesKey("text")
+// Keys for DataStore
+val PREF_COUNT_KEY = intPreferencesKey("count")
+val PREF_TEXT_KEY = stringPreferencesKey("text")
+
+/**
+ * Entry point Composable that lets user toggle between two screens:
+ * - DataStore example
+ * - SQLDelight User CRUD example
+ */
 @Composable
 fun MainScreen(prefs: DataStore<Preferences>, dbHelper: DatabaseHelper) {
-    var selectedScreen by remember { mutableStateOf("datastore") }
+    var currentScreen by remember { mutableStateOf(ScreenOption.DATASTORE) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        // Switch buttons
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+
+        // Toggle buttons
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
-                onClick = { selectedScreen = "datastore" },
-                enabled = selectedScreen != "datastore"
+                onClick = { currentScreen = ScreenOption.DATASTORE },
+                enabled = currentScreen != ScreenOption.DATASTORE
             ) {
                 Text("DataStore Demo")
             }
 
             Button(
-                onClick = { selectedScreen = "sql" },
-                enabled = selectedScreen != "sql"
+                onClick = { currentScreen = ScreenOption.SQLDELIGHT },
+                enabled = currentScreen != ScreenOption.SQLDELIGHT
             ) {
                 Text("User CRUD (SQLDelight)")
             }
@@ -44,98 +47,95 @@ fun MainScreen(prefs: DataStore<Preferences>, dbHelper: DatabaseHelper) {
 
         Divider(modifier = Modifier.padding(vertical = 16.dp))
 
-        // Conditionally show one of the two screens
-        when (selectedScreen) {
-            "datastore" -> App(prefs)
-            "sql" -> UserScreen(dbHelper)
+        // Render selected screen
+        when (currentScreen) {
+            ScreenOption.DATASTORE -> DataStoreScreen(prefs)
+            ScreenOption.SQLDELIGHT -> SqlDelightUserScreen(dbHelper)
         }
     }
 }
 
+// Enum for clarity
+private enum class ScreenOption {
+    DATASTORE,
+    SQLDELIGHT
+}
 @Composable
-fun App(prefs: DataStore<Preferences>) {
+fun DataStoreScreen(prefs: DataStore<Preferences>) {
     val scope = rememberCoroutineScope()
-
-    // Read current count and text values from DataStore
     var count by remember { mutableStateOf(0) }
     var text by remember { mutableStateOf("") }
 
-    // Load initial values from DataStore when Composable starts
+    // Load values from DataStore once
     LaunchedEffect(Unit) {
         val preferences = prefs.data.first()
-        count = preferences[COUNT_KEY] ?: 0
-        text = preferences[TEXT_KEY] ?: ""
+        count = preferences[PREF_COUNT_KEY] ?: 0
+        text = preferences[PREF_TEXT_KEY] ?: ""
     }
 
-    MaterialTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text("Count: $count", style = MaterialTheme.typography.h5)
 
-            // Display and modify count
-            Text("Count: $count", style = MaterialTheme.typography.h1)
-            Row(modifier = Modifier.padding(vertical = 8.dp)) {
-                Button(onClick = {
-                    count++
-                    scope.launch {
-                        prefs.updateData {
-                            it.toMutablePreferences().apply { this[COUNT_KEY] = count }
-                        }
+        Row(modifier = Modifier.padding(vertical = 8.dp)) {
+            Button(onClick = {
+                count++
+                scope.launch {
+                    prefs.updateData {
+                        it.toMutablePreferences().apply { this[PREF_COUNT_KEY] = count }
                     }
-                }) {
-                    Text("Increase")
                 }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Button(onClick = {
-                    count--
-                    scope.launch {
-                        prefs.updateData {
-                            it.toMutablePreferences().apply { this[COUNT_KEY] = count }
-                        }
-                    }
-                }) {
-                    Text("Decrease")
-                }
+            }) {
+                Text("Increase")
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
-            // Edit and save text
-            OutlinedTextField(
-                value = text,
-                onValueChange = {
-                    text = it
-                    scope.launch {
-                        prefs.updateData { prefs ->
-                            prefs.toMutablePreferences().apply { this[TEXT_KEY] = text }
-                        }
+            Button(onClick = {
+                count--
+                scope.launch {
+                    prefs.updateData {
+                        it.toMutablePreferences().apply { this[PREF_COUNT_KEY] = count }
                     }
-                },
-                label = { Text("Enter text") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                }
+            }) {
+                Text("Decrease")
+            }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = text,
+            onValueChange = {
+                text = it
+                scope.launch {
+                    prefs.updateData {
+                        it.toMutablePreferences().apply { this[PREF_TEXT_KEY] = text }
+                    }
+                }
+            },
+            label = { Text("Enter text") },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
-
 @Composable
-fun UserScreen(dbHelper: DatabaseHelper) {
+fun SqlDelightUserScreen(dbHelper: DatabaseHelper) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var userIdToUpdate by remember { mutableStateOf("") }
     var userList by remember { mutableStateOf(emptyList<User>()) }
 
-    // Load all users initially and on every change
-    fun refreshUsers() {
+    fun loadUsers() {
         userList = dbHelper.getAllUsers()
     }
 
-    LaunchedEffect(true) {
-        refreshUsers()
+    LaunchedEffect(Unit) {
+        loadUsers()
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Add / Update User", style = MaterialTheme.typography.h4)
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text("User Entry", style = MaterialTheme.typography.h5)
 
         OutlinedTextField(
             value = name,
@@ -161,7 +161,7 @@ fun UserScreen(dbHelper: DatabaseHelper) {
         Row(modifier = Modifier.padding(vertical = 8.dp)) {
             Button(onClick = {
                 dbHelper.insertUser(name, email)
-                refreshUsers()
+                loadUsers()
                 name = ""
                 email = ""
                 userIdToUpdate = ""
@@ -169,12 +169,12 @@ fun UserScreen(dbHelper: DatabaseHelper) {
                 Text("Add")
             }
 
-            Spacer(Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Button(onClick = {
                 userIdToUpdate.toLongOrNull()?.let { id ->
                     dbHelper.updateUser(id, name, email)
-                    refreshUsers()
+                    loadUsers()
                     name = ""
                     email = ""
                     userIdToUpdate = ""
@@ -186,7 +186,7 @@ fun UserScreen(dbHelper: DatabaseHelper) {
 
         Divider(modifier = Modifier.padding(vertical = 16.dp))
 
-        Text("Users List", style = MaterialTheme.typography.h4)
+        Text("Users List", style = MaterialTheme.typography.h5)
 
         userList.forEach { user ->
             Row(
@@ -202,7 +202,7 @@ fun UserScreen(dbHelper: DatabaseHelper) {
                 }
                 Button(onClick = {
                     dbHelper.deleteUserById(user.id)
-                    refreshUsers()
+                    loadUsers()
                 }) {
                     Text("Delete")
                 }
@@ -210,5 +210,3 @@ fun UserScreen(dbHelper: DatabaseHelper) {
         }
     }
 }
-
-
