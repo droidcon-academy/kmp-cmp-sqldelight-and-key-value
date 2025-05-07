@@ -14,8 +14,7 @@ class MainActivity : ComponentActivity() {
         val dbHelper = DatabaseHelper(driverFactory.createDriver())
 
         setContent {
-            //App(createDataStore(applicationContext))
-            UserScreen( dbHelper)
+            MainScreen(dbHelper = dbHelper, prefs = createDataStore(applicationContext))
         }
     }
 }

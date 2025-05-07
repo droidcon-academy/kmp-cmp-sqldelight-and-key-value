@@ -14,6 +14,6 @@ fun MainViewController() = ComposeUIViewController {
     }
 
     MaterialTheme {
-        UserScreen(dbHelper = dbHelper)
+        MainScreen(dbHelper = dbHelper, prefs = createDataStore())
     }
 }

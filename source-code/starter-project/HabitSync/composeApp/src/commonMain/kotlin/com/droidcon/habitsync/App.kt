@@ -20,6 +20,37 @@ import kotlinx.coroutines.launch
 // Define preference keys
 val COUNT_KEY = intPreferencesKey("count")
 val TEXT_KEY = stringPreferencesKey("text")
+@Composable
+fun MainScreen(prefs: DataStore<Preferences>, dbHelper: DatabaseHelper) {
+    var selectedScreen by remember { mutableStateOf("datastore") }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // Switch buttons
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { selectedScreen = "datastore" },
+                enabled = selectedScreen != "datastore"
+            ) {
+                Text("DataStore Demo")
+            }
+
+            Button(
+                onClick = { selectedScreen = "sql" },
+                enabled = selectedScreen != "sql"
+            ) {
+                Text("User CRUD (SQLDelight)")
+            }
+        }
+
+        Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+        // Conditionally show one of the two screens
+        when (selectedScreen) {
+            "datastore" -> App(prefs)
+            "sql" -> UserScreen(dbHelper)
+        }
+    }
+}
 
 @Composable
 fun App(prefs: DataStore<Preferences>) {
