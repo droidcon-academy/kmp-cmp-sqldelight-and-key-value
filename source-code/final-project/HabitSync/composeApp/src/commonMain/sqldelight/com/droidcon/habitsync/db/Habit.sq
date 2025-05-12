@@ -1,0 +1,27 @@
+CREATE TABLE Habit (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    createdAt TEXT NOT NULL,
+    reminderTime TEXT,
+    isArchived INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM Habit;
+
+selectById:
+SELECT * FROM Habit WHERE id = ?;
+
+insertHabit:
+INSERT INTO Habit(id, title, createdAt, reminderTime, isArchived)
+VALUES (?, ?, ?, ?, ?);
+
+updateHabit:
+UPDATE Habit SET
+    title = ?,
+    reminderTime = ?,
+    isArchived = ?
+WHERE id = ?;
+
+deleteHabit:
+DELETE FROM Habit WHERE id = ?;

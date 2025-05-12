@@ -41,7 +41,9 @@ kotlin {
                 implementation(compose.preview)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.android.driver)
-            }
+            implementation("io.insert-koin:koin-android:3.5.0")
+
+        }
 
         commonMain.dependencies {
                 implementation(compose.runtime)
@@ -56,10 +58,15 @@ kotlin {
                 api(libs.datastore)
                 implementation(libs.coroutines.extensions)
                 implementation(libs.stately.common) // Needed by SQLDelight
-            }
+                implementation("io.insert-koin:koin-core:3.5.0")
+                implementation(libs.kotlinx.datetime)
+
+        }
 
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+            implementation("io.insert-koin:koin-core:3.5.0")
+
         }
     }
 }
@@ -97,8 +104,9 @@ dependencies {
 
 sqldelight {
     databases {
-        create("AppDatabase") {
+        create("HabitDatabase") {
             packageName.set("com.droidcon.habitsync.db")
         }
     }
 }
+

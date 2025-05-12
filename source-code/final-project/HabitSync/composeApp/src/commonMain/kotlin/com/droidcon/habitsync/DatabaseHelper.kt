@@ -1,12 +1,12 @@
 package com.droidcon.habitsync
 
 import app.cash.sqldelight.db.SqlDriver
-import com.droidcon.habitsync.db.AppDatabase
+import com.droidcon.habitsync.db.HabitDatabase
 import com.droidcon.habitsync.db.User
 
 
 class DatabaseHelper(driver: SqlDriver) {
-    private val database = AppDatabase(driver)
+    private val database = HabitDatabase(driver)
     private val userQueries = database.userQueries
 
     fun insertUser(name: String, email: String) {
