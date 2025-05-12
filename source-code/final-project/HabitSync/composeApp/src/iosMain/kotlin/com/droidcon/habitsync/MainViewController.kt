@@ -14,8 +14,8 @@ import com.droidcon.habitsync.viewmodel.HabitViewModel
 
 fun MainViewController() = ComposeUIViewController {
     val dbHelper = createDatabaseHelper()
-    val repository = HabitRepository(dbHelper)
-    val viewModel = HabitViewModel(repository)
-
-    MainHabitUI(viewModel = viewModel)
+//    val repository = HabitRepository(dbHelper)
+//    val viewModel = HabitViewModel(repository)
+//
+//    MainHabitUI(viewModel = viewModel)
 }

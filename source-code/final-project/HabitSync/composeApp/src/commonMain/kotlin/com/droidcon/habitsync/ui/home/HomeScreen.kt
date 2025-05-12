@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,22 +16,28 @@ import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.db.Habit
 import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.ui.add_edit.AddEditHabitScreen
+import com.droidcon.habitsync.ui.debug.DebugScreen
 import com.droidcon.habitsync.ui.habit_detail.HabitDetailScreen
 import com.droidcon.habitsync.utils.formatDateTimeKMP
 import com.droidcon.habitsync.viewmodel.AddEditMode
 import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
 import com.droidcon.habitsync.viewmodel.HabitFilter
 import com.droidcon.habitsync.viewmodel.HabitViewModel
-
 @Composable
 fun MainHabitUI(
     habitViewModel: HabitViewModel,
-    logRepo: HabitLogRepository
+    logRepo: HabitLogRepository,
+    dbHelper: com.droidcon.habitsync.db.DatabaseHelper
 ) {
     var screenMode by remember { mutableStateOf<AddEditMode?>(null) }
     var selectedHabitId by remember { mutableStateOf<String?>(null) }
+    var isDebugScreen by remember { mutableStateOf(false) }
 
     when {
+        isDebugScreen -> {
+            DebugScreen(onBack = { isDebugScreen = false }, db = dbHelper)
+        }
+
         screenMode != null -> {
             AddEditHabitScreen(
                 viewModel = habitViewModel,
@@ -54,25 +61,52 @@ fun MainHabitUI(
                 viewModel = habitViewModel,
                 onAdd = { screenMode = AddEditMode.Add },
                 onEdit = { screenMode = AddEditMode.Edit(it) },
-                onDetail = { selectedHabitId = it }
+                onDetail = { selectedHabitId = it },
+                onDebugClick = { isDebugScreen = true }
             )
         }
     }
 }
+
 
 @Composable
 fun HomeScreen(
     viewModel: HabitViewModel,
     onAdd: () -> Unit,
     onEdit: (String) -> Unit,
-    onDetail: (String) -> Unit
+    onDetail: (String) -> Unit,
+    onDebugClick: () -> Unit
 ) {
     val habits by viewModel.filteredHabits.collectAsState()
     val selectedFilter by viewModel.filter.collectAsState()
+    var menuExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Your Habits") })
+            TopAppBar(
+                title = { Text("Your Habits") },
+                actions = {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            menuExpanded = false
+                            onDebugClick()
+                        }) {
+                            Text("Debug Tools")
+                        }
+
+                        // Future: Add dark mode toggle here
+                        // DropdownMenuItem(onClick = { /* toggle theme */ }) {
+                        //     Text("Toggle Dark Mode")
+                        // }
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAdd) {
@@ -87,6 +121,7 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp)
         ) {
             FilterRow(selected = selectedFilter, onSelect = viewModel::setFilter)
+
             if (habits.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No habits yet. Tap + to add one.")
@@ -112,7 +147,6 @@ fun HomeScreen(
         }
     }
 }
-
 @Composable
 fun FilterRow(selected: HabitFilter, onSelect: (HabitFilter) -> Unit) {
     Row(

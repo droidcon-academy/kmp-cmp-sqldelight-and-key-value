@@ -11,7 +11,6 @@ import com.droidcon.habitsync.ui.home.MainHabitUI
 import com.droidcon.habitsync.viewmodel.HabitViewModel
 
 
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,10 +20,10 @@ class MainActivity : ComponentActivity() {
         val dbHelper = createDatabaseHelper(this)
         val habitRepository = HabitRepository(dbHelper)
         val habitLogRepository = HabitLogRepository(dbHelper)
-        val habitViewModel = HabitViewModel(habitRepository,habitLogRepository)
+        val habitViewModel = HabitViewModel(habitRepository, habitLogRepository)
 
         setContent {
-            MainHabitUI(habitViewModel = habitViewModel,habitLogRepository)
+            MainHabitUI(habitViewModel = habitViewModel, habitLogRepository, dbHelper)
         }
 //        setContent {
 //            SettingsScreen(prefs = prefs)

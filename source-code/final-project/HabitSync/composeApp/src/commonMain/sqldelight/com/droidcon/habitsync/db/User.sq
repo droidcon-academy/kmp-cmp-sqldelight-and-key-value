@@ -18,3 +18,6 @@ UPDATE User SET name = ?, email = ? WHERE id = ?;
 
 deleteUserById:
 DELETE FROM User WHERE id = ?;
+
+deleteAll:
+DELETE FROM Habit;

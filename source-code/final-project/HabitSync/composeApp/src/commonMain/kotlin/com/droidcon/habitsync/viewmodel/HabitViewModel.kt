@@ -57,7 +57,8 @@ class HabitViewModel(
             title = title,
             createdAt = createdAt,
             reminderTime = reminderTime,
-            isArchived = 0L
+            isArchived = 0L,
+         //   notes = ""
         )
         scope.launch { repo.insert(habit) }
     }
@@ -68,7 +69,8 @@ class HabitViewModel(
             title = title,
             createdAt = getHabitById(id)?.createdAt ?: "",
             reminderTime = reminderTime,
-            isArchived = 0L
+            isArchived = 0L,
+            //notes = ""
         )
         scope.launch { repo.update(updated) }
     }

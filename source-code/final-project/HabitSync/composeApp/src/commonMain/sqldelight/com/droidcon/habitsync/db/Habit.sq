@@ -4,6 +4,8 @@ CREATE TABLE Habit (
     createdAt TEXT NOT NULL,
     reminderTime TEXT,
     isArchived INTEGER NOT NULL
+--     ,
+--     notes TEXT
 );
 
 selectAll:
@@ -25,3 +27,6 @@ WHERE id = ?;
 
 deleteHabit:
 DELETE FROM Habit WHERE id = ?;
+
+deleteAll:
+DELETE FROM Habit;

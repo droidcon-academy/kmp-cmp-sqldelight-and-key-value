@@ -106,7 +106,16 @@ sqldelight {
     databases {
         create("HabitDatabase") {
             packageName.set("com.droidcon.habitsync.db")
+
+            schemaOutputDirectory.set(
+                file("src/commonMain/sqldelight/com/droidcon/habitsync/db/migrations")
+            )
+
+            migrationOutputDirectory.set(
+                file("src/commonMain/sqldelight/com/droidcon/habitsync/db/migrations")
+            )
         }
     }
 }
+
 
