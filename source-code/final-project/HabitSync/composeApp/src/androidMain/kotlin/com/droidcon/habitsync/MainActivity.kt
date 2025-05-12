@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.droidcon.habitsync.db.createDatabaseHelper
+import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.repository.HabitRepository
 import com.droidcon.habitsync.ui.home.HomeScreen
 import com.droidcon.habitsync.ui.home.MainHabitUI
@@ -19,10 +20,11 @@ class MainActivity : ComponentActivity() {
         val prefs = createDataStore(this)
         val dbHelper = createDatabaseHelper(this)
         val habitRepository = HabitRepository(dbHelper)
-        val habitViewModel = HabitViewModel(habitRepository)
+        val habitLogRepository = HabitLogRepository(dbHelper)
+        val habitViewModel = HabitViewModel(habitRepository,habitLogRepository)
 
         setContent {
-            MainHabitUI(viewModel = habitViewModel)
+            MainHabitUI(habitViewModel = habitViewModel,habitLogRepository)
         }
 //        setContent {
 //            SettingsScreen(prefs = prefs)

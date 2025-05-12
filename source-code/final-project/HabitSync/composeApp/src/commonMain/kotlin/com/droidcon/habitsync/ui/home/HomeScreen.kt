@@ -7,32 +7,56 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.db.Habit
+import com.droidcon.habitsync.repository.HabitLogRepository
+import com.droidcon.habitsync.ui.add_edit.AddEditHabitScreen
+import com.droidcon.habitsync.ui.habit_detail.HabitDetailScreen
+import com.droidcon.habitsync.utils.formatDateTimeKMP
 import com.droidcon.habitsync.viewmodel.AddEditMode
+import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
 import com.droidcon.habitsync.viewmodel.HabitFilter
 import com.droidcon.habitsync.viewmodel.HabitViewModel
-import kotlinx.coroutines.launch
 
 @Composable
-fun MainHabitUI(viewModel: HabitViewModel) {
+fun MainHabitUI(
+    habitViewModel: HabitViewModel,
+    logRepo: HabitLogRepository
+) {
     var screenMode by remember { mutableStateOf<AddEditMode?>(null) }
+    var selectedHabitId by remember { mutableStateOf<String?>(null) }
 
-    if (screenMode != null) {
-        AddEditHabitScreen(
-            viewModel = viewModel,
-            mode = screenMode!!,
-            onSaved = { screenMode = null }
-        )
-    } else {
-        HomeScreen(
-            viewModel = viewModel,
-            onAdd = { screenMode = AddEditMode.Add },
-            onEdit = { screenMode = AddEditMode.Edit(it) }
-        )
+    when {
+        screenMode != null -> {
+            AddEditHabitScreen(
+                viewModel = habitViewModel,
+                mode = screenMode!!,
+                onSaved = { screenMode = null }
+            )
+        }
+
+        selectedHabitId != null -> {
+            val detailViewModel = remember(selectedHabitId) {
+                HabitDetailViewModel(selectedHabitId!!, logRepo)
+            }
+            HabitDetailScreen(
+                viewModel = detailViewModel,
+                onBack = { selectedHabitId = null }
+            )
+        }
+
+        else -> {
+            HomeScreen(
+                viewModel = habitViewModel,
+                onAdd = { screenMode = AddEditMode.Add },
+                onEdit = { screenMode = AddEditMode.Edit(it) },
+                onDetail = { selectedHabitId = it }
+            )
+        }
     }
 }
 
@@ -40,31 +64,49 @@ fun MainHabitUI(viewModel: HabitViewModel) {
 fun HomeScreen(
     viewModel: HabitViewModel,
     onAdd: () -> Unit,
-    onEdit: (String) -> Unit
+    onEdit: (String) -> Unit,
+    onDetail: (String) -> Unit
 ) {
     val habits by viewModel.filteredHabits.collectAsState()
     val selectedFilter by viewModel.filter.collectAsState()
 
     Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Your Habits") })
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAdd) {
                 Text("+")
             }
         }
     ) { innerPadding ->
-        Column(Modifier.padding(innerPadding).fillMaxSize()) {
-
+        Column(
+            Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
             FilterRow(selected = selectedFilter, onSelect = viewModel::setFilter)
-
-            Spacer(Modifier.height(8.dp))
-
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(habits) { habit ->
-                    HabitItem(
-                        habit = habit,
-                        onDelete = { viewModel.deleteHabit(habit.id) },
-                        onEdit = { onEdit(habit.id) }
-                    )
+            if (habits.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No habits yet. Tap + to add one.")
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    item {
+                        Spacer(Modifier.height(12.dp))
+                    }
+                    items(habits) { habit ->
+                        HabitItem(
+                            habit = habit,
+                            onDelete = { viewModel.deleteHabit(habit.id) },
+                            onEdit = { onEdit(habit.id) },
+                            onClick = { onDetail(habit.id) }
+                        )
+                    }
+                    item {
+                        Spacer(Modifier.height(12.dp))
+                    }
                 }
             }
         }
@@ -76,107 +118,71 @@ fun FilterRow(selected: HabitFilter, onSelect: (HabitFilter) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         HabitFilter.values().forEach { filter ->
-            Button(
+            OutlinedButton(
                 onClick = { onSelect(filter) },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (selected == filter) MaterialTheme.colors.primary else MaterialTheme.colors.surface
-                )
+                colors = ButtonDefaults.outlinedButtonColors(
+                    backgroundColor = if (selected == filter)
+                        MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                    else
+                        MaterialTheme.colors.surface,
+                    contentColor = if (selected == filter)
+                        MaterialTheme.colors.primary
+                    else
+                        MaterialTheme.colors.onSurface
+                ),
+                elevation = ButtonDefaults.elevation(defaultElevation = 2.dp)
             ) {
-                Text(filter.name)
+                Text(filter.displayName)
             }
         }
     }
 }
+
 
 @Composable
 fun HabitItem(
     habit: Habit,
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onClick: () -> Unit
 ) {
-    Surface(
+    Card(
+        elevation = 4.dp,
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxWidth()
-            .clickable { onEdit() },
-        elevation = 2.dp
+            .clickable { onClick() }
     ) {
-        Row(
-            Modifier.padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(Modifier.weight(1f)) {
-                Text(habit.title, style = MaterialTheme.typography.h6)
-                Text("Created: ${habit.createdAt}", style = MaterialTheme.typography.caption)
-            }
-            IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
-            }
-        }
-    }
-}
-
-@Composable
-fun AddEditHabitScreen(
-    viewModel: HabitViewModel,
-    mode: AddEditMode,
-    onSaved: () -> Unit
-) {
-    val scope = rememberCoroutineScope()
-
-    var title by remember { mutableStateOf("") }
-    var reminderTime by remember { mutableStateOf("") }
-
-    // Pre-fill in Edit mode
-    LaunchedEffect(mode) {
-        if (mode is AddEditMode.Edit) {
-            viewModel.getHabitById(mode.habitId)?.let {
-                title = it.title
-                reminderTime = it.reminderTime ?: ""
-            }
-        }
-    }
-
-    Column(Modifier.padding(16.dp)) {
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = reminderTime,
-            onValueChange = { reminderTime = it },
-            label = { Text("Reminder Time (optional)") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                if (title.isBlank()) return@Button
-
-                scope.launch {
-                    val now = kotlinx.datetime.Clock.System.now().toString()
-                    when (mode) {
-                        is AddEditMode.Add -> viewModel.addHabit(title, now, reminderTime)
-                        is AddEditMode.Edit -> viewModel.updateHabit(mode.habitId, title, reminderTime)
-                    }
-                    onSaved()
+        Column(Modifier.fillMaxWidth()) {
+            Row(
+                Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(habit.title, style = MaterialTheme.typography.subtitle1)
+                    Text("Created: ${formatDateTimeKMP(habit.createdAt)}", style = MaterialTheme.typography.caption)
                 }
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Save")
+                Row {
+                    IconButton(onClick = onEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                    }
+                }
+            }
+
+            Divider(
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+                thickness = 2.dp,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

@@ -1,0 +1,25 @@
+CREATE TABLE HabitLog (
+    habitId TEXT NOT NULL,
+    date TEXT NOT NULL,
+    completed INTEGER NOT NULL,
+    PRIMARY KEY (habitId, date)
+);
+
+insertHabitLog:
+INSERT INTO HabitLog(habitId, date, completed)
+VALUES (?, ?, ?);
+
+updateHabitLog:
+UPDATE HabitLog SET completed = ? WHERE habitId = ? AND date = ?;
+
+selectLogForHabit:
+SELECT * FROM HabitLog WHERE habitId = ? ORDER BY date DESC;
+
+selectCompletedDates:
+SELECT date FROM HabitLog WHERE habitId = ? AND completed = 1 ORDER BY date DESC;
+
+selectLogForToday:
+SELECT * FROM HabitLog WHERE habitId = ? AND date = ?;
+
+deleteHabitLog:
+DELETE FROM HabitLog WHERE habitId = ? AND date = ?;
