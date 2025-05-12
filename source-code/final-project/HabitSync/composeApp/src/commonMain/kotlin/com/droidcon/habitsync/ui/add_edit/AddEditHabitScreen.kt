@@ -1,5 +1,6 @@
 package com.droidcon.habitsync.ui.add_edit
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -9,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.viewmodel.AddEditMode
 import com.droidcon.habitsync.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 @Composable
 fun AddEditHabitScreen(
@@ -35,13 +37,15 @@ fun AddEditHabitScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colors.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
             Text(
                 text = if (mode is AddEditMode.Add) "Add Habit" else "Edit Habit",
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colors.onBackground
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -50,7 +54,14 @@ fun AddEditHabitScreen(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.body1,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = MaterialTheme.colors.onBackground,
+                    focusedBorderColor = MaterialTheme.colors.primary,
+                    unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    cursorColor = MaterialTheme.colors.primary
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -59,7 +70,14 @@ fun AddEditHabitScreen(
                 value = reminderTime,
                 onValueChange = { reminderTime = it },
                 label = { Text("Reminder Time (e.g., 08:00)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.body1,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = MaterialTheme.colors.onBackground,
+                    focusedBorderColor = MaterialTheme.colors.primary,
+                    unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    cursorColor = MaterialTheme.colors.primary
+                )
             )
 
             if (mode is AddEditMode.Edit) {
@@ -70,8 +88,8 @@ fun AddEditHabitScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Created On:")
-                    Text(createdAt, style = MaterialTheme.typography.caption)
+                    Text("Created On:", color = MaterialTheme.colors.onBackground)
+                    Text(createdAt, style = MaterialTheme.typography.caption, color = MaterialTheme.colors.onSurface)
                 }
             }
         }
@@ -81,7 +99,7 @@ fun AddEditHabitScreen(
                 if (title.isBlank()) return@Button
 
                 scope.launch {
-                    val now = kotlinx.datetime.Clock.System.now().toString()
+                    val now = Clock.System.now().toString()
                     when (mode) {
                         is AddEditMode.Add -> viewModel.addHabit(title, now, reminderTime)
                         is AddEditMode.Edit -> viewModel.updateHabit(mode.habitId, title, reminderTime)

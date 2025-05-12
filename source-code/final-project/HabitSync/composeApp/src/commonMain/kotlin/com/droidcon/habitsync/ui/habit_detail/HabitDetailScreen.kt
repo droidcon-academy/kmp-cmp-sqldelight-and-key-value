@@ -11,10 +11,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
-import com.droidcon.habitsync.utils.StreakInfo
 import kotlinx.datetime.*
 
 @Composable
@@ -26,7 +26,12 @@ fun HabitDetailScreen(
     val completedDates by viewModel.completedDates.collectAsState()
     val streakInfo by viewModel.streakInfo.collectAsState()
 
-    Column(Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+            .padding(16.dp)
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -34,31 +39,43 @@ fun HabitDetailScreen(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colors.onBackground
                 )
             }
-            Text("Habit Detail", style = MaterialTheme.typography.h6)
+            Spacer(Modifier.width(8.dp))
+            Text("Habit Detail", style = MaterialTheme.typography.h6, color = MaterialTheme.colors.onBackground)
         }
+
         Spacer(Modifier.height(16.dp))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
                 checked = isDoneToday,
-                onCheckedChange = { viewModel.toggleTodayCompletion() }
+                onCheckedChange = { viewModel.toggleTodayCompletion() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = MaterialTheme.colors.primary,
+                    uncheckedColor = MaterialTheme.colors.onSurface
+                )
             )
             Spacer(Modifier.width(8.dp))
-            Text(if (isDoneToday) "Completed today" else "Mark as done today")
+            Text(
+                if (isDoneToday) "Completed today" else "Mark as done today",
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onBackground
+            )
         }
 
         Spacer(Modifier.height(24.dp))
 
-        Text("Past 42 Days", style = MaterialTheme.typography.subtitle1)
+        Text("📅 Past 42 Days", style = MaterialTheme.typography.subtitle1, color = MaterialTheme.colors.onBackground)
+        Spacer(Modifier.height(8.dp))
         CalendarGridView(completedDates)
 
         Spacer(Modifier.height(24.dp))
 
-        Text("🔥 Current Streak: ${streakInfo.currentStreak} days")
-        Text("🏆 Best Streak: ${streakInfo.bestStreak} days")
+        Text("🔥 Current Streak: ${streakInfo.currentStreak} days", style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onBackground)
+        Text("🏆 Best Streak: ${streakInfo.bestStreak} days", style = MaterialTheme.typography.body1, color = MaterialTheme.colors.onBackground)
     }
 }
 
@@ -67,6 +84,11 @@ fun CalendarGridView(completedDates: List<String>) {
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val past42Days = (0..41).map { today.minus(it, DateTimeUnit.DAY) }.reversed()
     val completedSet = remember(completedDates) { completedDates.toSet() }
+
+    val shape: Shape = MaterialTheme.shapes.small
+    val completedColor = MaterialTheme.colors.primary
+    val uncompletedColor = MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
+    val textColor = MaterialTheme.colors.onPrimary
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
@@ -80,20 +102,19 @@ fun CalendarGridView(completedDates: List<String>) {
             val dateStr = date.toString()
             val completed = completedSet.contains(dateStr)
 
-            Column(
+            Box(
                 modifier = Modifier
                     .size(36.dp)
+                    .clip(shape)
                     .background(
-                        color = if (completed) Color.Green else Color.LightGray,
-                        shape = MaterialTheme.shapes.small
+                        color = if (completed) completedColor else uncompletedColor
                     ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = date.dayOfMonth.toString(),
                     style = MaterialTheme.typography.caption,
-                    color = Color.White
+                    color = if (completed) textColor else MaterialTheme.colors.onSurface
                 )
             }
         }

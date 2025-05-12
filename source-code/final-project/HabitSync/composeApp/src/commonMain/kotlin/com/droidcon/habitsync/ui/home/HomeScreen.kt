@@ -18,56 +18,80 @@ import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.ui.add_edit.AddEditHabitScreen
 import com.droidcon.habitsync.ui.debug.DebugScreen
 import com.droidcon.habitsync.ui.habit_detail.HabitDetailScreen
+import com.droidcon.habitsync.ui.settings.ThemeManager
 import com.droidcon.habitsync.utils.formatDateTimeKMP
 import com.droidcon.habitsync.viewmodel.AddEditMode
 import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
 import com.droidcon.habitsync.viewmodel.HabitFilter
 import com.droidcon.habitsync.viewmodel.HabitViewModel
+import kotlinx.coroutines.launch
+
 @Composable
 fun MainHabitUI(
     habitViewModel: HabitViewModel,
     logRepo: HabitLogRepository,
-    dbHelper: com.droidcon.habitsync.db.DatabaseHelper
+    dbHelper: com.droidcon.habitsync.db.DatabaseHelper,
+    themeManager: ThemeManager
 ) {
     var screenMode by remember { mutableStateOf<AddEditMode?>(null) }
     var selectedHabitId by remember { mutableStateOf<String?>(null) }
     var isDebugScreen by remember { mutableStateOf(false) }
+    var showThemeSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
 
-    when {
-        isDebugScreen -> {
-            DebugScreen(onBack = { isDebugScreen = false }, db = dbHelper)
-        }
-
-        screenMode != null -> {
-            AddEditHabitScreen(
-                viewModel = habitViewModel,
-                mode = screenMode!!,
-                onSaved = { screenMode = null }
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetContent = {
+            ThemeSelectorSheet(
+                themeManager = themeManager,
+                onDismiss = {
+                    scope.launch { sheetState.hide() }
+                    showThemeSheet = false
+                }
             )
         }
-
-        selectedHabitId != null -> {
-            val detailViewModel = remember(selectedHabitId) {
-                HabitDetailViewModel(selectedHabitId!!, logRepo)
+    ) {
+        when {
+            isDebugScreen -> {
+                DebugScreen(onBack = { isDebugScreen = false }, db = dbHelper)
             }
-            HabitDetailScreen(
-                viewModel = detailViewModel,
-                onBack = { selectedHabitId = null }
-            )
-        }
 
-        else -> {
-            HomeScreen(
-                viewModel = habitViewModel,
-                onAdd = { screenMode = AddEditMode.Add },
-                onEdit = { screenMode = AddEditMode.Edit(it) },
-                onDetail = { selectedHabitId = it },
-                onDebugClick = { isDebugScreen = true }
-            )
+            screenMode != null -> {
+                AddEditHabitScreen(
+                    viewModel = habitViewModel,
+                    mode = screenMode!!,
+                    onSaved = { screenMode = null }
+                )
+            }
+
+            selectedHabitId != null -> {
+                val detailViewModel = remember(selectedHabitId) {
+                    HabitDetailViewModel(selectedHabitId!!, logRepo)
+                }
+                HabitDetailScreen(
+                    viewModel = detailViewModel,
+                    onBack = { selectedHabitId = null }
+                )
+            }
+
+            else -> {
+                HomeScreen(
+                    viewModel = habitViewModel,
+                    onAdd = { screenMode = AddEditMode.Add },
+                    onEdit = { screenMode = AddEditMode.Edit(it) },
+                    onDetail = { selectedHabitId = it },
+                    onDebugClick = { isDebugScreen = true },
+                    onShowTheme = {
+                        showThemeSheet = true
+                        scope.launch { sheetState.show() }
+                    },
+                    themeManager = themeManager
+                )
+            }
         }
     }
 }
-
 
 @Composable
 fun HomeScreen(
@@ -75,12 +99,13 @@ fun HomeScreen(
     onAdd: () -> Unit,
     onEdit: (String) -> Unit,
     onDetail: (String) -> Unit,
-    onDebugClick: () -> Unit
+    onDebugClick: () -> Unit,
+    onShowTheme: () -> Unit,
+    themeManager: ThemeManager
 ) {
     val habits by viewModel.filteredHabits.collectAsState()
     val selectedFilter by viewModel.filter.collectAsState()
     var menuExpanded by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -100,10 +125,14 @@ fun HomeScreen(
                             Text("Debug Tools")
                         }
 
-                        // Future: Add dark mode toggle here
-                        // DropdownMenuItem(onClick = { /* toggle theme */ }) {
-                        //     Text("Toggle Dark Mode")
-                        // }
+                        Divider()
+
+                        DropdownMenuItem(onClick = {
+                            menuExpanded = false
+                            onShowTheme()
+                        }) {
+                            Text("Theme")
+                        }
                     }
                 }
             )
@@ -147,6 +176,7 @@ fun HomeScreen(
         }
     }
 }
+
 @Composable
 fun FilterRow(selected: HabitFilter, onSelect: (HabitFilter) -> Unit) {
     Row(
@@ -175,7 +205,6 @@ fun FilterRow(selected: HabitFilter, onSelect: (HabitFilter) -> Unit) {
         }
     }
 }
-
 
 @Composable
 fun HabitItem(
@@ -217,6 +246,40 @@ fun HabitItem(
                 thickness = 2.dp,
                 modifier = Modifier.fillMaxWidth()
             )
+        }
+    }
+}
+
+@Composable
+fun ThemeSelectorSheet(
+    themeManager: ThemeManager,
+    onDismiss: () -> Unit
+) {
+    val theme by themeManager.themeFlow.collectAsState(initial = "system")
+    val scope = rememberCoroutineScope()
+
+    Column(Modifier.padding(16.dp)) {
+        Text("Choose Theme", style = MaterialTheme.typography.h6)
+        Spacer(Modifier.height(16.dp))
+
+        listOf("light", "dark", "system").forEach { mode ->
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        themeManager.setTheme(mode)
+                        onDismiss()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (theme == mode) "✓ ${mode.capitalize()}" else mode.capitalize())
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+            Text("Cancel")
         }
     }
 }
