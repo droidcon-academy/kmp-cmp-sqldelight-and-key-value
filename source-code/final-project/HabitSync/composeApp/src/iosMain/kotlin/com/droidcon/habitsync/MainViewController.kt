@@ -3,37 +3,34 @@ package com.droidcon.habitsync
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
 import com.droidcon.habitsync.datastore.createDataStore
+import com.droidcon.habitsync.db.DatabaseHelper
 import com.droidcon.habitsync.db.createDatabaseHelper
+import com.droidcon.habitsync.di.initKoinIos
 import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.repository.HabitRepository
 import com.droidcon.habitsync.ui.home.MainHabitUI
 import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.ui.theme.AppTheme
 import com.droidcon.habitsync.viewmodel.HabitViewModel
+import org.koin.mp.KoinPlatform.getKoin
 
-// Entry point for iOS app using Compose Multiplatform
+// Entry point for the iOS app using Compose Multiplatform UI
 fun MainViewController() = ComposeUIViewController {
-    // Create a key-value DataStore instance for iOS using KMP shared logic
-    val prefs = remember { createDataStore() }
+    // Initialize Koin for iOS platform
+    initKoinIos()
 
-    // Manage the theme (light, dark, system) based on user preference stored in prefs
-    val themeManager = remember { ThemeManager(prefs) }
+    // Retrieve dependencies from the Koin container
+    val themeManager: ThemeManager = getKoin().get()
+    val habitViewModel: HabitViewModel = getKoin().get()
+    val dbHelper: DatabaseHelper = getKoin().get()
+    val logRepo: HabitLogRepository = getKoin().get()
 
-    // Create the SQLDelight database helper instance for managing DB operations
-    val dbHelper = remember { createDatabaseHelper() }
-
-    // Set up repositories to handle business logic (habits and logs)
-    val habitRepository = remember { HabitRepository(dbHelper) }
-    val habitLogRepository = remember { HabitLogRepository(dbHelper) }
-
-    // ViewModel that contains UI logic and communicates with repositories
-    val habitViewModel = remember { HabitViewModel(habitRepository, habitLogRepository) }
-
-    // Apply current theme and show the main UI for habit tracking
+    // Apply app-wide theming
     AppTheme(themeManager) {
+        // Render the main Habit UI
         MainHabitUI(
             habitViewModel = habitViewModel,
-            logRepo = habitLogRepository,
+            logRepo = logRepo,
             dbHelper = dbHelper,
             themeManager = themeManager
         )

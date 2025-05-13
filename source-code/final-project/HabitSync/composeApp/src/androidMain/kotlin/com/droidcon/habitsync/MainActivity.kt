@@ -4,53 +4,43 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import com.droidcon.habitsync.datastore.createDataStore
-import com.droidcon.habitsync.db.DatabaseHelper
-import com.droidcon.habitsync.db.createDatabaseHelper
-import com.droidcon.habitsync.repository.HabitLogRepository
-import com.droidcon.habitsync.repository.HabitRepository
+import com.droidcon.habitsync.di.initKoinAndroid
 import com.droidcon.habitsync.ui.home.MainHabitUI
 import com.droidcon.habitsync.ui.theme.AppTheme
 import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.viewmodel.HabitViewModel
+import org.koin.compose.getKoin
 
 class MainActivity : ComponentActivity() {
-
-    // Create DB once, early
-    private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize SQLDelight database
-        dbHelper = createDatabaseHelper(this)
+        // Initialize Koin dependency injection with Android context
+        initKoinAndroid(applicationContext)
 
-        // Create DataStore instance
-        val prefs = createDataStore(this)
-
-        // Set Compose content
+        // Set the root Composable content
         setContent {
-            App(prefs)
+            App()
         }
     }
 
     @Composable
-    fun App(prefs: DataStore<Preferences>) {
-        val themeManager = remember { ThemeManager(prefs) }
+    fun App() {
+        // Retrieve ThemeManager from Koin container
+        val themeManager = getKoin().get<ThemeManager>()
 
+        // Apply app-wide theme
         AppTheme(themeManager = themeManager) {
-            // Inject dependencies manually
-            val habitRepository = remember { HabitRepository(dbHelper) }
-            val habitLogRepository = remember { HabitLogRepository(dbHelper) }
-            val habitViewModel = remember { HabitViewModel(habitRepository, habitLogRepository) }
+            // Retrieve other dependencies from Koin
+            val habitViewModel = getKoin().get<HabitViewModel>()
+            val logRepo = getKoin().get<com.droidcon.habitsync.repository.HabitLogRepository>()
+            val dbHelper = getKoin().get<com.droidcon.habitsync.db.DatabaseHelper>()
 
-            // Render main UI
+            // Render the main UI
             MainHabitUI(
                 habitViewModel = habitViewModel,
-                logRepo = habitLogRepository,
+                logRepo = logRepo,
                 dbHelper = dbHelper,
                 themeManager = themeManager
             )
