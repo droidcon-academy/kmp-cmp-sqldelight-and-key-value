@@ -25,7 +25,6 @@ import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
 import com.droidcon.habitsync.viewmodel.HabitFilter
 import com.droidcon.habitsync.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
-
 @Composable
 fun MainHabitUI(
     habitViewModel: HabitViewModel,
@@ -33,13 +32,17 @@ fun MainHabitUI(
     dbHelper: com.droidcon.habitsync.db.DatabaseHelper,
     themeManager: ThemeManager
 ) {
+    // State to control which screen is currently shown
     var screenMode by remember { mutableStateOf<AddEditMode?>(null) }
     var selectedHabitId by remember { mutableStateOf<String?>(null) }
     var isDebugScreen by remember { mutableStateOf(false) }
     var showThemeSheet by remember { mutableStateOf(false) }
+
+    // Bottom sheet state for theme selector
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
 
+    // Modal bottom sheet layout wraps the whole navigation logic
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
@@ -52,6 +55,7 @@ fun MainHabitUI(
             )
         }
     ) {
+        // Navigation logic based on current state
         when {
             isDebugScreen -> {
                 DebugScreen(onBack = { isDebugScreen = false }, db = dbHelper)
@@ -76,6 +80,7 @@ fun MainHabitUI(
             }
 
             else -> {
+                // Default: show home screen
                 HomeScreen(
                     viewModel = habitViewModel,
                     onAdd = { screenMode = AddEditMode.Add },
@@ -106,6 +111,7 @@ fun HomeScreen(
     val habits by viewModel.filteredHabits.collectAsState()
     val selectedFilter by viewModel.filter.collectAsState()
     var menuExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -114,6 +120,8 @@ fun HomeScreen(
                     IconButton(onClick = { menuExpanded = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "More options")
                     }
+
+                    // Dropdown menu for Debug + Theme options
                     DropdownMenu(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
@@ -149,13 +157,16 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
+            // Filter chips for habit filtering (All, Completed, Missed)
             FilterRow(selected = selectedFilter, onSelect = viewModel::setFilter)
 
             if (habits.isEmpty()) {
+                // Show empty state
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("No habits yet. Tap + to add one.")
                 }
             } else {
+                // List all habits
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     item {
                         Spacer(Modifier.height(12.dp))
@@ -185,6 +196,7 @@ fun FilterRow(selected: HabitFilter, onSelect: (HabitFilter) -> Unit) {
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        // Show all filter types as buttons
         HabitFilter.values().forEach { filter ->
             OutlinedButton(
                 onClick = { onSelect(filter) },
@@ -262,6 +274,7 @@ fun ThemeSelectorSheet(
         Text("Choose Theme", style = MaterialTheme.typography.h6)
         Spacer(Modifier.height(16.dp))
 
+        // Options: Light, Dark, System
         listOf("light", "dark", "system").forEach { mode ->
             OutlinedButton(
                 onClick = {

@@ -12,6 +12,10 @@ import com.droidcon.habitsync.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
+/**
+ * A Composable screen to add or edit a habit.
+ * Shows a form with title, optional reminder time, and creation date in edit mode.
+ */
 @Composable
 fun AddEditHabitScreen(
     viewModel: HabitViewModel,
@@ -20,10 +24,12 @@ fun AddEditHabitScreen(
 ) {
     val scope = rememberCoroutineScope()
 
+    // UI state for form fields
     var title by remember { mutableStateOf("") }
     var reminderTime by remember { mutableStateOf("") }
     var createdAt by remember { mutableStateOf("") }
 
+    // Pre-fill the form in edit mode
     LaunchedEffect(mode) {
         if (mode is AddEditMode.Edit) {
             viewModel.getHabitById(mode.habitId)?.let {
@@ -34,6 +40,7 @@ fun AddEditHabitScreen(
         }
     }
 
+    // Main layout
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,6 +49,7 @@ fun AddEditHabitScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
+            // Header
             Text(
                 text = if (mode is AddEditMode.Add) "Add Habit" else "Edit Habit",
                 style = MaterialTheme.typography.h6,
@@ -50,6 +58,7 @@ fun AddEditHabitScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Habit title input
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
@@ -66,6 +75,7 @@ fun AddEditHabitScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Reminder time input
             OutlinedTextField(
                 value = reminderTime,
                 onValueChange = { reminderTime = it },
@@ -80,6 +90,7 @@ fun AddEditHabitScreen(
                 )
             )
 
+            // Created date display (only in Edit mode)
             if (mode is AddEditMode.Edit) {
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -89,11 +100,16 @@ fun AddEditHabitScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Created On:", color = MaterialTheme.colors.onBackground)
-                    Text(createdAt, style = MaterialTheme.typography.caption, color = MaterialTheme.colors.onSurface)
+                    Text(
+                        createdAt,
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.onSurface
+                    )
                 }
             }
         }
 
+        // Save button
         Button(
             onClick = {
                 if (title.isBlank()) return@Button

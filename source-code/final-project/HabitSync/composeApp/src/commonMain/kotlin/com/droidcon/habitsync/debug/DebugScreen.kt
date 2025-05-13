@@ -22,6 +22,7 @@ fun DebugScreen(
     var showSheet by remember { mutableStateOf(false) }
     var debugText by remember { mutableStateOf("Loading...") }
 
+    // When showSheet is true, display the DB info inside a ModalBottomSheet
     if (showSheet) {
         ModalBottomSheetLayout(
             sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Expanded),
@@ -44,12 +45,13 @@ fun DebugScreen(
                 }
             }
         ) {
-            // Trigger the sheet inside this layout
+            // Inside modal layout: show buttons and actions
             BaseDebugScreen(db, onBack, onPrintClick = {
                 scope.launch(Dispatchers.IO) {
                     val habits = db.db.habitQueries.selectAll().executeAsList()
                     val logs = db.db.habitLogQueries.selectAllLogs().executeAsList()
 
+                    // Format and build display string
                     debugText = buildString {
                         append("🗂 Habit Table:\n")
                         if (habits.isEmpty()) append("  (No data)\n")
@@ -65,6 +67,7 @@ fun DebugScreen(
             })
         }
     } else {
+        // When no sheet is showing, show normal debug UI
         BaseDebugScreen(db, onBack, onPrintClick = {
             scope.launch(Dispatchers.IO) {
                 val habits = db.db.habitQueries.selectAll().executeAsList()
@@ -107,6 +110,7 @@ private fun BaseDebugScreen(
         ) {
             Text("🧪 Developer Actions")
 
+            // Resets all habit and log entries in the database
             Button(onClick = {
                 scope.launch(Dispatchers.IO) {
                     db.db.habitQueries.deleteAll()
@@ -117,10 +121,12 @@ private fun BaseDebugScreen(
                 Text("Reset All Data")
             }
 
+            // Triggers DB info loading and opens the bottom sheet
             Button(onClick = onPrintClick) {
                 Text("Print DB Info")
             }
 
+            // Back navigation
             OutlinedButton(
                 onClick = onBack,
                 modifier = Modifier.align(Alignment.End)

@@ -10,9 +10,17 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
+/**
+ * Repository to manage habit log data access and manipulation.
+ * Handles all read/write operations for HabitLog table.
+ */
 class HabitLogRepository(private val db: DatabaseHelper) {
 
-    // ✅ Insert or update a log for the given day
+    /**
+     * Inserts a new log or updates the existing log for the given habit on the given date.
+     * - If no record exists, inserts a new one.
+     * - If record exists, updates its completed status.
+     */
     suspend fun upsertLog(habitId: String, date: String, completed: Boolean) {
         withContext(Dispatchers.IO) {
             val existing = db.db.habitLogQueries
@@ -35,14 +43,20 @@ class HabitLogRepository(private val db: DatabaseHelper) {
         }
     }
 
-    // ✅ Remove a log (used for undo or debugging)
+    /**
+     * Deletes a log entry for the given habit and date.
+     * Useful for debug tools or undo feature.
+     */
     suspend fun deleteLog(habitId: String, date: String) {
         withContext(Dispatchers.IO) {
             db.db.habitLogQueries.deleteHabitLog(habitId, date)
         }
     }
 
-    // ✅ Reactive stream of all logs for this habit
+    /**
+     * Emits a stream of all logs for the given habit.
+     * Used to show full history or debugging logs.
+     */
     fun getLogForHabit(habitId: String): Flow<List<HabitLog>> {
         return db.db.habitLogQueries
             .selectLogForHabit(habitId)
@@ -50,7 +64,10 @@ class HabitLogRepository(private val db: DatabaseHelper) {
             .mapToList(Dispatchers.IO)
     }
 
-    // ✅ Reactive stream of today's log (used for toggle checkbox)
+    /**
+     * Emits the log entry for today (if any) for the given habit.
+     * Used to check and toggle today’s completion status.
+     */
     fun getLogForToday(habitId: String, date: String): Flow<HabitLog?> {
         return db.db.habitLogQueries
             .selectLogForToday(habitId, date)
@@ -58,7 +75,10 @@ class HabitLogRepository(private val db: DatabaseHelper) {
             .mapToOneOrNull(Dispatchers.IO)
     }
 
-    // ✅ Reactive stream of just the completed date strings (used for streaks + calendar)
+    /**
+     * Emits a list of completed date strings for the given habit.
+     * Used to calculate streaks and fill calendar UI.
+     */
     fun getCompletedDates(habitId: String): Flow<List<String>> {
         return db.db.habitLogQueries
             .selectCompletedDates(habitId)
