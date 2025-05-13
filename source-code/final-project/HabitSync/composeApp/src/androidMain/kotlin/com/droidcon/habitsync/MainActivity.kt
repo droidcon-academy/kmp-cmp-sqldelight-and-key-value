@@ -10,9 +10,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.droidcon.habitsync.db.createDatabaseHelper
 import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.repository.HabitRepository
-import com.droidcon.habitsync.ui.home.HomeScreen
 import com.droidcon.habitsync.ui.home.MainHabitUI
-import com.droidcon.habitsync.ui.settings.ThemeManager
+import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.ui.theme.AppTheme
 import com.droidcon.habitsync.viewmodel.HabitViewModel
 
@@ -27,7 +26,7 @@ class MainActivity : ComponentActivity() {
         // Initialize database outside of Composable
         dbHelper = createDatabaseHelper(this)
 
-        val prefs = createDataStore(this)
+        val prefs = com.droidcon.habitsync.datastore.createDataStore(this)
 
         setContent {
             App(prefs)

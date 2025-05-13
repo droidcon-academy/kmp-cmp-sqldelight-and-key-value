@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.ui.settings
+package com.droidcon.habitsync.ui.theme
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

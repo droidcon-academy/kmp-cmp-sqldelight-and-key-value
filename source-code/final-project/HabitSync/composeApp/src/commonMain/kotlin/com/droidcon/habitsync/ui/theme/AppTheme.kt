@@ -3,7 +3,6 @@ package com.droidcon.habitsync.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import com.droidcon.habitsync.ui.settings.ThemeManager
 
 @Composable
 fun AppTheme(

@@ -18,7 +18,7 @@ import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.ui.add_edit.AddEditHabitScreen
 import com.droidcon.habitsync.ui.debug.DebugScreen
 import com.droidcon.habitsync.ui.habit_detail.HabitDetailScreen
-import com.droidcon.habitsync.ui.settings.ThemeManager
+import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.utils.formatDateTimeKMP
 import com.droidcon.habitsync.viewmodel.AddEditMode
 import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
