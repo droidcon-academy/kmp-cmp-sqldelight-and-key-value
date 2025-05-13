@@ -11,13 +11,16 @@ import platform.Foundation.NSUserDomainMask
 
 fun createDataStore(): DataStore<Preferences> {
     return createDataStore {
+        // Get the path to the iOS app's Documents directory
         val directory = NSFileManager.defaultManager.URLForDirectory(
-            directory = NSDocumentDirectory,
-            inDomain = NSUserDomainMask,
-            appropriateForURL = null,
-            create = false,
-            error = null
+            directory = NSDocumentDirectory,       // Standard documents directory
+            inDomain = NSUserDomainMask,           // Scope: user's home directory
+            appropriateForURL = null,              // No specific URL context
+            create = false,                        // Don't create if missing
+            error = null                           // Not handling errors explicitly
         )
+
+        // Return the full path to the preferences file
         requireNotNull(directory).path + "/$DATA_STORE_FILE_NAME"
     }
 }
