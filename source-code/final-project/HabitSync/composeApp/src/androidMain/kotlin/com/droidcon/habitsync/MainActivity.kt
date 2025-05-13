@@ -7,27 +7,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.droidcon.habitsync.datastore.createDataStore
+import com.droidcon.habitsync.db.DatabaseHelper
 import com.droidcon.habitsync.db.createDatabaseHelper
 import com.droidcon.habitsync.repository.HabitLogRepository
 import com.droidcon.habitsync.repository.HabitRepository
 import com.droidcon.habitsync.ui.home.MainHabitUI
-import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.ui.theme.AppTheme
+import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.viewmodel.HabitViewModel
-
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var dbHelper: com.droidcon.habitsync.db.DatabaseHelper
+    // Create DB once, early
+    private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize database outside of Composable
+        // Initialize SQLDelight database
         dbHelper = createDatabaseHelper(this)
 
-        val prefs = com.droidcon.habitsync.datastore.createDataStore(this)
+        // Create DataStore instance
+        val prefs = createDataStore(this)
 
+        // Set Compose content
         setContent {
             App(prefs)
         }
@@ -38,10 +42,12 @@ class MainActivity : ComponentActivity() {
         val themeManager = remember { ThemeManager(prefs) }
 
         AppTheme(themeManager = themeManager) {
+            // Inject dependencies manually
             val habitRepository = remember { HabitRepository(dbHelper) }
             val habitLogRepository = remember { HabitLogRepository(dbHelper) }
             val habitViewModel = remember { HabitViewModel(habitRepository, habitLogRepository) }
 
+            // Render main UI
             MainHabitUI(
                 habitViewModel = habitViewModel,
                 logRepo = habitLogRepository,
@@ -51,4 +57,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

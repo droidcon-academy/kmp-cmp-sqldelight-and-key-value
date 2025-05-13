@@ -1,19 +1,18 @@
 package com.droidcon.habitsync.db
 
-
 import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 
 fun createDatabaseHelper(context: Context): DatabaseHelper {
-
+    // Create the SQLDelight driver with a callback to handle creation and upgrade events
     val driver = AndroidSqliteDriver(
         schema = HabitDatabase.Schema,
         context = context,
         name = "habit.db",
         callback = object : AndroidSqliteDriver.Callback(HabitDatabase.Schema) {
             override fun onCreate(db: SupportSQLiteDatabase) {
-                println("📦 Database created")
+                println("📦 Habit Tracker DB created")
             }
 
             override fun onUpgrade(
@@ -22,14 +21,17 @@ fun createDatabaseHelper(context: Context): DatabaseHelper {
                 newVersion: Int
             ) {
                 println("🔁 Habit Tracker DB migrated from v$oldVersion → $newVersion")
+                // Add custom SQL migration statements here if needed
             }
         }
     )
-    //val driver = AndroidSqliteDriver(HabitDatabase.Schema, context, "habit.db")
+
+    // Log the current schema version (for debug visibility)
     val currentVersion = HabitDatabase.Schema.version
-    println("Habit Tracker Current schema version = $currentVersion")
+    println("📌 Habit Tracker current schema version = $currentVersion")
+
+    // Return your DatabaseHelper implementation
     return object : DatabaseHelper {
         override val db: HabitDatabase = HabitDatabase(driver)
     }
 }
-
