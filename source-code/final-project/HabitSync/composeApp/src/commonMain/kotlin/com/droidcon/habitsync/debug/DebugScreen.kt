@@ -32,7 +32,7 @@ fun DebugScreen(
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text("📊 Database Tables", style = MaterialTheme.typography.h6)
+                    Text("Database Tables", style = MaterialTheme.typography.h6)
                     Spacer(Modifier.height(8.dp))
                     Text(debugText, style = MaterialTheme.typography.body2)
                     Spacer(Modifier.height(16.dp))
@@ -53,11 +53,11 @@ fun DebugScreen(
 
                     // Format and build display string
                     debugText = buildString {
-                        append("🗂 Habit Table:\n")
+                        append(" Habit Table:\n")
                         if (habits.isEmpty()) append("  (No data)\n")
                         else habits.forEach { append("  $it\n") }
 
-                        append("\n🗂 HabitLog Table:\n")
+                        append("\nHabitLog Table:\n")
                         if (logs.isEmpty()) append("  (No data)\n")
                         else logs.forEach { append("  $it\n") }
                     }
@@ -74,11 +74,11 @@ fun DebugScreen(
                 val logs = db.db.habitLogQueries.selectAllLogs().executeAsList()
 
                 debugText = buildString {
-                    append("🗂 Habit Table:\n")
+                    append("Habit Table:\n")
                     if (habits.isEmpty()) append("  (No data)\n")
                     else habits.forEach { append("  $it\n") }
 
-                    append("\n🗂 HabitLog Table:\n")
+                    append("\n HabitLog Table:\n")
                     if (logs.isEmpty()) append("  (No data)\n")
                     else logs.forEach { append("  $it\n") }
                 }

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 class HabitRepository(private val db: DatabaseHelper) {
 
     /**
-     * 🔁 Returns a reactive stream of all habits.
+     *  Returns a reactive stream of all habits.
      * This updates automatically when the table data changes.
      */
     fun getAllHabits(): Flow<List<Habit>> =
@@ -25,7 +25,7 @@ class HabitRepository(private val db: DatabaseHelper) {
             .mapToList(Dispatchers.IO)
 
     /**
-     * 🔍 Returns a reactive stream of a specific habit by its ID.
+     *  Returns a reactive stream of a specific habit by its ID.
      * Returns null if no habit is found.
      */
     fun getHabitById(id: String): Flow<Habit?> =
@@ -34,7 +34,7 @@ class HabitRepository(private val db: DatabaseHelper) {
             .mapToOneOrNull(Dispatchers.IO)
 
     /**
-     * ➕ Inserts a new habit into the database.
+     *  Inserts a new habit into the database.
      */
     suspend fun insert(habit: Habit) {
         db.db.habitQueries.insertHabit(
@@ -47,7 +47,7 @@ class HabitRepository(private val db: DatabaseHelper) {
     }
 
     /**
-     * ✏️ Updates an existing habit.
+     * ️ Updates an existing habit.
      * Matching is done by ID.
      */
     suspend fun update(habit: Habit) {
@@ -60,7 +60,7 @@ class HabitRepository(private val db: DatabaseHelper) {
     }
 
     /**
-     * ❌ Deletes a habit by ID.
+     *  Deletes a habit by ID.
      */
     suspend fun delete(id: String) {
         db.db.habitQueries.deleteHabit(id)

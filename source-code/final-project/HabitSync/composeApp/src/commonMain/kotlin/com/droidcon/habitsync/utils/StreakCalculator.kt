@@ -31,14 +31,14 @@ fun calculateStreaks(completedDateStrings: List<String>): StreakInfo {
     var bestStreak = 0
     var streak = 0
 
-    // ✅ Calculate current streak by counting how many days back from today are in the set
+    // Calculate current streak by counting how many days back from today are in the set
     var day = today
     while (completedDates.contains(day)) {
         currentStreak++
         day = day.minus(1, DateTimeUnit.DAY)
     }
 
-    // ✅ Calculate best streak by iterating through sorted dates
+    // Calculate best streak by iterating through sorted dates
     val sortedDates = completedDates.sorted()
     var prev: LocalDate? = null
     for (date in sortedDates) {
