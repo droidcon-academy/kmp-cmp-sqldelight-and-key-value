@@ -17,9 +17,6 @@ import org.koin.compose.getKoin
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val prefs: DataStore<Preferences> = getKoin().get()
-    val dbHelper: DatabaseHelper = getKoin().get()
-
     Scaffold(
         topBar = {
             Row(
