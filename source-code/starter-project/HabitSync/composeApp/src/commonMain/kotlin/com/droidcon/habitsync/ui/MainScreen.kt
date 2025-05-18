@@ -37,7 +37,7 @@ fun MainScreen() {
             }
         }
     ) { padding ->
-        NavGraph(navController, prefs, dbHelper, Modifier.padding(padding))
+        NavGraph(navController, Modifier.padding(padding))
     }
 }
 
@@ -49,8 +49,6 @@ object Routes {
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    prefs: DataStore<Preferences>,
-    dbHelper: DatabaseHelper,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -59,10 +57,10 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(Routes.DataStore) {
-            DataStoreScreen(prefs)
+            DataStoreScreen()
         }
         composable(Routes.SqlDelight) {
-            SqlDelightUserScreen(dbHelper)
+            SqlDelightUserScreen()
         }
     }
 }

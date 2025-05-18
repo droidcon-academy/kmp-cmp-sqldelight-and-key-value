@@ -9,12 +9,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.compose.getKoin
 
 val PREF_COUNT_KEY = intPreferencesKey("count")
 val PREF_TEXT_KEY = stringPreferencesKey("text")
 
 @Composable
-fun DataStoreScreen(prefs: DataStore<Preferences>) {
+fun DataStoreScreen() {
+    val prefs: DataStore<Preferences> = getKoin().get()
     val scope = rememberCoroutineScope()
     var count by remember { mutableStateOf(0) }
     var text by remember { mutableStateOf("") }

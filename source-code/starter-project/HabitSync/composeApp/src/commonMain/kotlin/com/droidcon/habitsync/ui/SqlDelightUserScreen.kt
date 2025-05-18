@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.db.DatabaseHelper
 import com.droidcon.habitsync.db.User
+import org.koin.compose.getKoin
 
 @Composable
-fun SqlDelightUserScreen(dbHelper: DatabaseHelper) {
+fun SqlDelightUserScreen() {
+    val dbHelper: DatabaseHelper = getKoin().get()
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var userIdToUpdate by remember { mutableStateOf("") }
