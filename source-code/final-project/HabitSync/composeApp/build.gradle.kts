@@ -55,7 +55,7 @@ kotlin {
                 api(libs.datastore.preferences)
                 api(libs.datastore)
                 implementation(libs.coroutines.extensions)
-                implementation(libs.stately.common) // Needed by SQLDelight
+                implementation(libs.stately.common)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)

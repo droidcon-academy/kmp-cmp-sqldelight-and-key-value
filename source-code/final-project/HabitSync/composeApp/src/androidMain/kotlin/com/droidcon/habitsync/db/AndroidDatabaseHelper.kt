@@ -12,6 +12,7 @@ fun createDatabaseHelper(context: Context): DatabaseHelper {
         name = "habit.db",
         callback = object : AndroidSqliteDriver.Callback(HabitDatabase.Schema) {
             override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
                 println("📦 Habit Tracker DB created")
             }
 
@@ -20,15 +21,15 @@ fun createDatabaseHelper(context: Context): DatabaseHelper {
                 oldVersion: Int,
                 newVersion: Int
             ) {
-                println("🔁 Habit Tracker DB migrated from v$oldVersion → $newVersion")
-                // Add custom SQL migration statements here if needed
+                super.onUpgrade(db, oldVersion, newVersion)
+                println("Habit Tracker DB migrated from v$oldVersion → $newVersion")
             }
         }
     )
 
     // Log the current schema version (for debug visibility)
     val currentVersion = HabitDatabase.Schema.version
-    println("📌 Habit Tracker current schema version = $currentVersion")
+    println("Habit Tracker current schema version = $currentVersion")
 
     // Return your DatabaseHelper implementation
     return object : DatabaseHelper {
