@@ -55,8 +55,11 @@ kotlin {
                 api(libs.datastore.preferences)
                 api(libs.datastore)
                 implementation(libs.coroutines.extensions)
-                implementation(libs.stately.common) // Needed by SQLDelight
-            }
+                implementation(libs.stately.common)
+                api(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.navigation.compose)
+        }
 
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
