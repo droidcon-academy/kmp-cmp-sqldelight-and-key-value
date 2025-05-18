@@ -1,4 +1,4 @@
-package com.droidcon.habitsync
+package com.droidcon.habitsync.db
 
 import app.cash.sqldelight.db.SqlDriver
 

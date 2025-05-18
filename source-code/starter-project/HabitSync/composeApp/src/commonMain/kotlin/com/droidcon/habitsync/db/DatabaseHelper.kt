@@ -1,8 +1,6 @@
-package com.droidcon.habitsync
+package com.droidcon.habitsync.db
 
 import app.cash.sqldelight.db.SqlDriver
-import com.droidcon.habitsync.db.AppDatabase
-import com.droidcon.habitsync.db.User
 
 
 class DatabaseHelper(driver: SqlDriver) {

@@ -1,9 +1,8 @@
-package com.droidcon.habitsync
+package com.droidcon.habitsync.db
 
 import android.content.Context
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.droidcon.habitsync.db.AppDatabase
 
 actual class DriverFactory(private val context: Context) {
     actual fun createDriver(): SqlDriver {

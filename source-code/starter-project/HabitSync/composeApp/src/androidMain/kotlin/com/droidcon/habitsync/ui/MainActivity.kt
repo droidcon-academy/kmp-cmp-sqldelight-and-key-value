@@ -1,4 +1,4 @@
-package com.droidcon.habitsync
+package com.droidcon.habitsync.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

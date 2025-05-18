@@ -1,4 +1,4 @@
-package com.droidcon.habitsync
+package com.droidcon.habitsync.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore

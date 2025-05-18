@@ -1,4 +1,4 @@
-package com.droidcon.habitsync
+package com.droidcon.habitsync.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.droidcon.habitsync.db.DatabaseHelper
 import org.koin.compose.getKoin
 
 @Composable

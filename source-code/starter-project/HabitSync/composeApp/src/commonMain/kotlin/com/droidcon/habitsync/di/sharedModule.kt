@@ -3,7 +3,7 @@ package com.droidcon.habitsync.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.droidcon.habitsync.DatabaseHelper
+import com.droidcon.habitsync.db.DatabaseHelper
 import org.koin.dsl.module
 
 
