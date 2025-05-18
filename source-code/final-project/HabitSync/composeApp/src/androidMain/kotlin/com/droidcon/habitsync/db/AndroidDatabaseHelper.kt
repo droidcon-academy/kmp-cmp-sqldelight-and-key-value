@@ -13,7 +13,7 @@ fun createDatabaseHelper(context: Context): DatabaseHelper {
         callback = object : AndroidSqliteDriver.Callback(HabitDatabase.Schema) {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
-                println("📦 Habit Tracker DB created")
+                println("Habit Tracker DB created")
             }
 
             override fun onUpgrade(

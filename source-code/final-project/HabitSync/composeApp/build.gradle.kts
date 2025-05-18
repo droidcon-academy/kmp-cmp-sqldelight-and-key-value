@@ -59,6 +59,7 @@ kotlin {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
+                implementation(libs.navigation.compose)
         }
 
         iosMain.dependencies {

@@ -1,5 +1,6 @@
 package com.droidcon.habitsync.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
 import com.droidcon.habitsync.viewmodel.HabitFilter
 import com.droidcon.habitsync.viewmodel.HabitViewModel
 import kotlinx.coroutines.launch
+
 @Composable
 fun MainHabitUI(
     habitViewModel: HabitViewModel,
@@ -42,60 +44,46 @@ fun MainHabitUI(
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
 
-    // Modal bottom sheet layout wraps the whole navigation logic
-    ModalBottomSheetLayout(
-        sheetState = sheetState,
-        sheetContent = {
-            ThemeSelectorSheet(
-                themeManager = themeManager,
-                onDismiss = {
-                    scope.launch { sheetState.hide() }
-                    showThemeSheet = false
-                }
+    when {
+        isDebugScreen -> {
+            DebugScreen(onBack = { isDebugScreen = false }, db = dbHelper)
+        }
+
+        screenMode != null -> {
+            AddEditHabitScreen(
+                viewModel = habitViewModel,
+                mode = screenMode!!,
+                onSaved = { screenMode = null }
             )
         }
-    ) {
-        // Navigation logic based on current state
-        when {
-            isDebugScreen -> {
-                DebugScreen(onBack = { isDebugScreen = false }, db = dbHelper)
-            }
 
-            screenMode != null -> {
-                AddEditHabitScreen(
-                    viewModel = habitViewModel,
-                    mode = screenMode!!,
-                    onSaved = { screenMode = null }
-                )
+        selectedHabitId != null -> {
+            val detailViewModel = remember(selectedHabitId) {
+                HabitDetailViewModel(selectedHabitId!!, logRepo)
             }
+            HabitDetailScreen(
+                viewModel = detailViewModel,
+                onBack = { selectedHabitId = null }
+            )
+        }
 
-            selectedHabitId != null -> {
-                val detailViewModel = remember(selectedHabitId) {
-                    HabitDetailViewModel(selectedHabitId!!, logRepo)
-                }
-                HabitDetailScreen(
-                    viewModel = detailViewModel,
-                    onBack = { selectedHabitId = null }
-                )
-            }
-
-            else -> {
-                // Default: show home screen
-                HomeScreen(
-                    viewModel = habitViewModel,
-                    onAdd = { screenMode = AddEditMode.Add },
-                    onEdit = { screenMode = AddEditMode.Edit(it) },
-                    onDetail = { selectedHabitId = it },
-                    onDebugClick = { isDebugScreen = true },
-                    onShowTheme = {
-                        showThemeSheet = true
-                        scope.launch { sheetState.show() }
-                    },
-                    themeManager = themeManager
-                )
-            }
+        else -> {
+            // Default: show home screen
+            HomeScreen(
+                viewModel = habitViewModel,
+                onAdd = { screenMode = AddEditMode.Add },
+                onEdit = { screenMode = AddEditMode.Edit(it) },
+                onDetail = { selectedHabitId = it },
+                onDebugClick = { isDebugScreen = true },
+                onShowTheme = {
+                    showThemeSheet = true
+                    scope.launch { sheetState.show() }
+                },
+                themeManager = themeManager
+            )
         }
     }
+
 }
 
 @Composable
@@ -241,7 +229,10 @@ fun HabitItem(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(habit.title, style = MaterialTheme.typography.subtitle1)
-                    Text("Created: ${formatDateTimeKMP(habit.createdAt)}", style = MaterialTheme.typography.caption)
+                    Text(
+                        "Created: ${formatDateTimeKMP(habit.createdAt)}",
+                        style = MaterialTheme.typography.caption
+                    )
                 }
                 Row {
                     IconButton(onClick = onEdit) {
@@ -270,7 +261,7 @@ fun ThemeSelectorSheet(
     val theme by themeManager.themeFlow.collectAsState(initial = "system")
     val scope = rememberCoroutineScope()
 
-    Column(Modifier.padding(16.dp)) {
+    Column(Modifier.background(MaterialTheme.colors.surface).fillMaxSize()) {
         Text("Choose Theme", style = MaterialTheme.typography.h6)
         Spacer(Modifier.height(16.dp))
 

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import com.droidcon.habitsync.di.initKoinAndroid
-import com.droidcon.habitsync.ui.home.MainHabitUI
+import com.droidcon.habitsync.navigation.HabitNavGraph
 import com.droidcon.habitsync.ui.theme.AppTheme
 import com.droidcon.habitsync.ui.theme.ThemeManager
 import com.droidcon.habitsync.viewmodel.HabitViewModel
@@ -37,9 +37,8 @@ class MainActivity : ComponentActivity() {
             val logRepo = getKoin().get<com.droidcon.habitsync.repository.HabitLogRepository>()
             val dbHelper = getKoin().get<com.droidcon.habitsync.db.DatabaseHelper>()
 
-            // Render the main UI
-            MainHabitUI(
-                habitViewModel = habitViewModel,
+            HabitNavGraph(
+                habitViewModel =habitViewModel,
                 logRepo = logRepo,
                 dbHelper = dbHelper,
                 themeManager = themeManager
