@@ -1,12 +1,8 @@
 package com.droidcon.habitsync.di
 
 import android.content.Context
-import com.droidcon.habitsync.data.datastore.createDataStore
 import com.droidcon.habitsync.datastore.createDataStore
 import com.droidcon.habitsync.db.createDatabaseHelper
-import com.droidcon.habitsync.domain.repository.HabitLogRepository
-import com.droidcon.habitsync.domain.repository.HabitRepository
-import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 

@@ -41,10 +41,13 @@ fun AddEditHabitScreen(
     // Pre-fill the form in edit mode
     LaunchedEffect(mode) {
         if (mode is AddEditMode.Edit) {
-            viewModel.getHabitById(mode.habitId)?.let {
-                title = it.title
-                reminderTime = it.reminderTime ?: ""
-                createdAt = it.createdAt
+            viewModel.filteredHabits.collect() { habits ->
+                val habit = habits.find { it.id == mode.habitId }
+                if (habit != null) {
+                    title = habit.title
+                    reminderTime = habit.reminderTime ?: ""
+                    createdAt = habit.createdAt
+                }
             }
         }
     }
