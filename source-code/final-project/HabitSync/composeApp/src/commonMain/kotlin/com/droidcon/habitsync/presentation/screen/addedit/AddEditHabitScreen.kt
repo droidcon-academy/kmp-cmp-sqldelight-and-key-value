@@ -1,8 +1,11 @@
+// AddEditHabitScreen.kt
 package com.droidcon.habitsync.presentation.screen.addedit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,92 +43,98 @@ fun AddEditHabitScreen(
         }
     }
 
-    // Main layout
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            // Header
-            Text(
-                text = if (mode is AddEditMode.Add) "Add Habit" else "Edit Habit",
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.onBackground
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(if (mode is AddEditMode.Add) "Add Habit" else "Edit Habit")
+                },
+                navigationIcon = {
+                    IconButton(onClick = onSaved) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Habit title input
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.body1,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = MaterialTheme.colors.onBackground,
-                    focusedBorderColor = MaterialTheme.colors.primary,
-                    unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    cursorColor = MaterialTheme.colors.primary
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                // Habit title input
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.body1,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = MaterialTheme.colors.onBackground,
+                        focusedBorderColor = MaterialTheme.colors.primary,
+                        unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        cursorColor = MaterialTheme.colors.primary
+                    )
                 )
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Reminder time input
-            OutlinedTextField(
-                value = reminderTime,
-                onValueChange = { reminderTime = it },
-                label = { Text("Reminder Time (e.g., 08:00)") },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.body1,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = MaterialTheme.colors.onBackground,
-                    focusedBorderColor = MaterialTheme.colors.primary,
-                    unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
-                    cursorColor = MaterialTheme.colors.primary
-                )
-            )
-
-            // Created date display (only in Edit mode)
-            if (mode is AddEditMode.Edit) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Created On:", color = MaterialTheme.colors.onBackground)
-                    Text(
-                        createdAt,
-                        style = MaterialTheme.typography.caption,
-                        color = MaterialTheme.colors.onSurface
+                // Reminder time input
+                OutlinedTextField(
+                    value = reminderTime,
+                    onValueChange = { reminderTime = it },
+                    label = { Text("Reminder Time (e.g., 08:00)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.body1,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = MaterialTheme.colors.onBackground,
+                        focusedBorderColor = MaterialTheme.colors.primary,
+                        unfocusedBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                        cursorColor = MaterialTheme.colors.primary
                     )
+                )
+
+                // Created date display (only in Edit mode)
+                if (mode is AddEditMode.Edit) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Created On:", color = MaterialTheme.colors.onBackground)
+                        Text(
+                            createdAt,
+                            style = MaterialTheme.typography.caption,
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
                 }
             }
-        }
 
-        // Save button
-        Button(
-            onClick = {
-                if (title.isBlank()) return@Button
+            // Save button
+            Button(
+                onClick = {
+                    if (title.isBlank()) return@Button
 
-                scope.launch {
-                    val now = Clock.System.now().toString()
-                    when (mode) {
-                        is AddEditMode.Add -> viewModel.addHabit(title, now, reminderTime)
-                        is AddEditMode.Edit -> viewModel.updateHabit(mode.habitId, title, reminderTime)
+                    scope.launch {
+                        val now = Clock.System.now().toString()
+                        when (mode) {
+                            is AddEditMode.Add -> viewModel.addHabit(title, now, reminderTime)
+                            is AddEditMode.Edit -> viewModel.updateHabit(mode.habitId, title, reminderTime)
+                        }
+                        onSaved()
                     }
-                    onSaved()
-                }
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Save")
+                },
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text("Save")
+            }
         }
     }
 }

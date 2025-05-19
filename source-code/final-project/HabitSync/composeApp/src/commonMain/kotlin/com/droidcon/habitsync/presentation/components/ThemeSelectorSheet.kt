@@ -1,18 +1,11 @@
 package com.droidcon.habitsync.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
@@ -27,11 +20,27 @@ fun ThemeSelectorSheet(
     val theme by themeManager.themeFlow.collectAsState(initial = "system")
     val scope = rememberCoroutineScope()
 
-    Column(Modifier.background(MaterialTheme.colors.surface).fillMaxSize()) {
-        Text("Choose Theme", style = MaterialTheme.typography.h6)
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface)
+            .fillMaxSize()
+    ) {
+        // Top Bar with Back Button
+        TopAppBar(
+            title = { Text("Choose Theme") },
+            navigationIcon = {
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+            },
+            backgroundColor = MaterialTheme.colors.surface,
+            contentColor = MaterialTheme.colors.onSurface,
+            elevation = 4.dp
+        )
+
         Spacer(Modifier.height(16.dp))
 
-        // Options: Light, Dark, System
+        // Theme selection options
         listOf("light", "dark", "system").forEach { mode ->
             OutlinedButton(
                 onClick = {
@@ -40,7 +49,9 @@ fun ThemeSelectorSheet(
                         onDismiss()
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Text(if (theme == mode) "✓ ${mode.capitalize()}" else mode.capitalize())
             }
@@ -48,7 +59,13 @@ fun ThemeSelectorSheet(
         }
 
         Spacer(Modifier.height(8.dp))
-        OutlinedButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+
+        OutlinedButton(
+            onClick = onDismiss,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
             Text("Cancel")
         }
     }
