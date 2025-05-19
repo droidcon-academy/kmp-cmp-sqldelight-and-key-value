@@ -16,15 +16,17 @@ import com.droidcon.habitsync.presentation.screen.debug.DebugScreen
 import com.droidcon.habitsync.presentation.screen.habitdetail.HabitDetailViewModel
 import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
+import org.koin.compose.getKoin
 
 @Composable
 fun HabitNavGraph(
-    habitViewModel: HabitViewModel,
-    logRepo: HabitLogRepository,
-    dbHelper: DatabaseHelper,
-    themeManager: ThemeManager,
     navController: NavHostController = rememberNavController()
 ) {
+    val themeManager = getKoin().get<ThemeManager>()
+    val habitViewModel = getKoin().get<HabitViewModel>()
+    val logRepo = getKoin().get<HabitLogRepository>()
+    val dbHelper = getKoin().get<DatabaseHelper>()
+
     NavHost(navController = navController, startDestination = Screen.Home.route) {
 
         composable(Screen.Home.route) {

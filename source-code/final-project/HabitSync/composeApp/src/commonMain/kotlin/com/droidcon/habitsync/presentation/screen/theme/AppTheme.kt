@@ -3,6 +3,7 @@ package com.droidcon.habitsync.presentation.screen.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import org.koin.compose.getKoin
 
 /**
  * AppTheme is the top-level composable responsible for applying
@@ -13,9 +14,9 @@ import androidx.compose.runtime.*
  */
 @Composable
 fun AppTheme(
-    themeManager: ThemeManager,
     content: @Composable () -> Unit
 ) {
+    val themeManager = getKoin().get<ThemeManager>()
     // Collect the current theme value (light/dark/system) from the DataStore
     val themePref by themeManager.themeFlow.collectAsState(initial = "system")
 
