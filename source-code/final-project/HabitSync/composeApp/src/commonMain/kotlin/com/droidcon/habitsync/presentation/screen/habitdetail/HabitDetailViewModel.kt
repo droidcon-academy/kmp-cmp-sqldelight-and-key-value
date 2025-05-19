@@ -20,7 +20,7 @@ import kotlinx.datetime.todayIn
 class HabitDetailViewModel(
     private val habitId: String,
     private val logRepo: HabitLogRepository
-):ViewModel() {
+) : ViewModel() {
     // Coroutine scope tied to this ViewModel instance
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 

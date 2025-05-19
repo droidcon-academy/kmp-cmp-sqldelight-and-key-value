@@ -24,19 +24,13 @@ fun initKoinAndroid(appContext: Context) {
         // Provides a DataStore instance for saving preferences
         single { createDataStore(appContext) }
 
-        // Provides a ThemeManager that reads/writes theme preference from DataStore
-        single { ThemeManager(get()) }
-
-        // Repository to access habit records
-        single { HabitRepository(get()) }
-
-        // Repository to access habit logs (completion status)
-        single { HabitLogRepository(get()) }
-
     }
 
-    // Start Koin with the declared modules
+    // Start Koin with both iOS-specific and shared modules
     startKoin {
-        modules(androidModule)
+        modules(
+            androidModule,
+            sharedModule()
+        )
     }
 }

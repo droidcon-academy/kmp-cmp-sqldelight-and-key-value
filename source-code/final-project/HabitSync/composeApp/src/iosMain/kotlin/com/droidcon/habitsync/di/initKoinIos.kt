@@ -12,26 +12,24 @@ import org.koin.dsl.module
  * with shared business logic modules (repositories, viewmodels, etc).
  */
 fun initKoinIos() {
-    // Create SQLDelight database instance using native driver
-    val dbHelper = createDatabaseHelper()
 
     // iOS-specific dependency module
     val iosModule = module {
         // Provide the shared DB instance to be used by repositories
-        single { dbHelper }
+        single { createDatabaseHelper() }
 
         // Provide platform-specific DataStore for preferences
         single { createDataStore() }
 
         // Provide ThemeManager using DataStore
-        single { ThemeManager(get()) }
+
     }
 
     // Start Koin with both iOS-specific and shared modules
     startKoin {
         modules(
             iosModule,
-            sharedModule(dbHelper) // Inject shared logic (repos, viewmodels) using the DB
+            sharedModule() // Inject shared logic (repos, viewmodels) using the DB
         )
     }
 }

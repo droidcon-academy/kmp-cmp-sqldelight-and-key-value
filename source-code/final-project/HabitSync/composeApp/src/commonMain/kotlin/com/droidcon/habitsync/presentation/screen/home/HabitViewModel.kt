@@ -67,7 +67,9 @@ class HabitViewModel(
     }
 
     // Return a habit by ID if it exists (used in edit mode)
-    fun getHabitById(id: String): Habit? = allHabits.value.find { it.id == id }
+    fun getHabitById(id: String): Habit? {
+       return allHabits.value.find { it.id == id }
+    }
 
     // Add a new habit
     fun addHabit(title: String, createdAt: String, reminderTime: String?) {
