@@ -17,12 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
 import kotlinx.coroutines.launch
+import org.koin.compose.getKoin
 
 @Composable
 fun ThemeSelectorSheet(
-    themeManager: ThemeManager,
     onDismiss: () -> Unit
 ) {
+    val themeManager = getKoin().get<ThemeManager>()
     val theme by themeManager.themeFlow.collectAsState(initial = "system")
     val scope = rememberCoroutineScope()
 

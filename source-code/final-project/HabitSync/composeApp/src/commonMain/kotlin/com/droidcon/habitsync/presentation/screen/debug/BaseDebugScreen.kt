@@ -17,13 +17,14 @@ import com.droidcon.habitsync.data.db.DatabaseHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import org.koin.compose.getKoin
 
 @Composable
 fun BaseDebugScreen(
-    db: DatabaseHelper,
     onBack: () -> Unit,
     onPrintClick: () -> Unit
 ) {
+    val db = getKoin().get<DatabaseHelper>()
     val scope = rememberCoroutineScope()
 
     Scaffold(

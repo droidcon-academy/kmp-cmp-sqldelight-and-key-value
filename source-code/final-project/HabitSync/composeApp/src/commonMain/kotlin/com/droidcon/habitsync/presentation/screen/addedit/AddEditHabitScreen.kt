@@ -11,6 +11,7 @@ import com.droidcon.habitsync.domain.model.AddEditMode
 import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import org.koin.compose.getKoin
 
 /**
  * A Composable screen to add or edit a habit.
@@ -18,12 +19,11 @@ import kotlinx.datetime.Clock
  */
 @Composable
 fun AddEditHabitScreen(
-    viewModel: HabitViewModel,
     mode: AddEditMode,
     onSaved: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-
+    val viewModel = getKoin().get<HabitViewModel>()
     // UI state for form fields
     var title by remember { mutableStateOf("") }
     var reminderTime by remember { mutableStateOf("") }

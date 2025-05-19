@@ -12,11 +12,13 @@ import com.droidcon.habitsync.data.db.DatabaseHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import org.koin.compose.getKoin
+
 @Composable
 fun DebugScreen(
-    db: DatabaseHelper,
     onBack: () -> Unit
 ) {
+    val db = getKoin().get<DatabaseHelper>()
     val scope = rememberCoroutineScope()
     var showSheet by remember { mutableStateOf(false) }
     var debugText by remember { mutableStateOf("Loading...") }
@@ -45,7 +47,7 @@ fun DebugScreen(
             }
         ) {
             // Inside modal layout: show buttons and actions
-            BaseDebugScreen(db, onBack, onPrintClick = {
+            BaseDebugScreen(onBack, onPrintClick = {
                 scope.launch(Dispatchers.IO) {
                     val habits = db.db.habitQueries.selectAll().executeAsList()
                     val logs = db.db.habitLogQueries.selectAllLogs().executeAsList()
@@ -67,7 +69,7 @@ fun DebugScreen(
         }
     } else {
         // When no sheet is showing, show normal debug UI
-        BaseDebugScreen(db, onBack, onPrintClick = {
+        BaseDebugScreen( onBack, onPrintClick = {
             scope.launch(Dispatchers.IO) {
                 val habits = db.db.habitQueries.selectAll().executeAsList()
                 val logs = db.db.habitLogQueries.selectAllLogs().executeAsList()

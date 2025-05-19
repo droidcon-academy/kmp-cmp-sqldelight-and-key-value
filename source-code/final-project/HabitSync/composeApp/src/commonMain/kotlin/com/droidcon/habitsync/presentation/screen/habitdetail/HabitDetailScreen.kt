@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
 import kotlinx.datetime.*
+import org.koin.compose.getKoin
 
 /**
  * Screen to display details for a selected habit.
@@ -22,9 +24,11 @@ import kotlinx.datetime.*
  */
 @Composable
 fun HabitDetailScreen(
-    viewModel: HabitDetailViewModel,
+    habitId: String,
     onBack: () -> Unit
 ) {
+    val logRepo = getKoin().get<HabitLogRepository>()
+    val viewModel = HabitDetailViewModel(habitId, logRepo)
     // UI state
     val isDoneToday by viewModel.isCompletedToday.collectAsState()
     val completedDates by viewModel.completedDates.collectAsState()

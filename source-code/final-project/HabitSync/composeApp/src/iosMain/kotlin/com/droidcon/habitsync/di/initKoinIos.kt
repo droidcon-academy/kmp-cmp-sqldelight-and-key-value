@@ -1,7 +1,6 @@
 package com.droidcon.habitsync.di
 
 import com.droidcon.habitsync.db.createDatabaseHelper
-import com.droidcon.habitsync.data.datastore.createDataStore
 import com.droidcon.habitsync.datastore.createDataStore
 import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
 import org.koin.core.context.startKoin
