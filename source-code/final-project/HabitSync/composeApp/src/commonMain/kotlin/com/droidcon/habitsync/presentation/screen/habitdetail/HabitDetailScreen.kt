@@ -1,21 +1,31 @@
 package com.droidcon.habitsync.presentation.screen.habitdetail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.droidcon.habitsync.domain.repository.HabitLogRepository
-import kotlinx.datetime.*
 import org.koin.compose.getKoin
 
 @Composable
@@ -24,7 +34,7 @@ fun HabitDetailScreen(
     onBack: () -> Unit
 ) {
     val logRepo = getKoin().get<HabitLogRepository>()
-    val viewModel = HabitDetailViewModel(habitId, logRepo)
+    val viewModel = viewModel { HabitDetailViewModel(habitId, logRepo) }
     val isDoneToday by viewModel.isCompletedToday.collectAsState()
     val completedDates by viewModel.completedDates.collectAsState()
     val streakInfo by viewModel.streakInfo.collectAsState()

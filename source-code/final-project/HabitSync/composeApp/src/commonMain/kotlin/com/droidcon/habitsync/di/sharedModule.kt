@@ -21,6 +21,4 @@ fun sharedModule(dbHelper: DatabaseHelper) = module {
     // Provide the habit log (history) repository
     single { HabitLogRepository(get()) }
 
-    // Provide the shared ViewModel for habit operations
-    single { HabitViewModel(get(), get()) }
 }

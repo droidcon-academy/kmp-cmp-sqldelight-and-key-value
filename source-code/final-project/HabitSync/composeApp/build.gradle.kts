@@ -60,6 +60,7 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.navigation.compose)
+                implementation(libs.lifecycle.viewmodel.compose)
         }
 
         iosMain.dependencies {

@@ -1,5 +1,6 @@
 package com.droidcon.habitsync.presentation.screen.home
 
+import androidx.lifecycle.ViewModel
 import com.droidcon.habitsync.db.Habit
 import com.droidcon.habitsync.domain.model.HabitFilter
 import com.droidcon.habitsync.domain.repository.HabitLogRepository
@@ -17,7 +18,7 @@ import kotlinx.datetime.todayIn
 class HabitViewModel(
     private val repo: HabitRepository,
     private val logRepo: HabitLogRepository
-) {
+) : ViewModel() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     // Currently selected filter type (All / Completed Today / Missed Today)

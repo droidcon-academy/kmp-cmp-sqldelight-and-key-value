@@ -10,11 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.droidcon.habitsync.domain.model.AddEditMode
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
+import com.droidcon.habitsync.domain.repository.HabitRepository
 import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.compose.getKoin
+import org.koin.compose.koinInject
 
 /**
  * A Composable screen to add or edit a habit.
@@ -23,10 +27,12 @@ import org.koin.compose.getKoin
 @Composable
 fun AddEditHabitScreen(
     mode: AddEditMode,
-    onSaved: () -> Unit
+    onSaved: () -> Unit,
+    habitRepository: HabitRepository = koinInject<HabitRepository>(),
+    habitLogRepository: HabitLogRepository = koinInject<HabitLogRepository>(),
 ) {
     val scope = rememberCoroutineScope()
-    val viewModel = getKoin().get<HabitViewModel>()
+    val viewModel =  viewModel {HabitViewModel(habitRepository, habitLogRepository)}
     // UI state for form fields
     var title by remember { mutableStateOf("") }
     var reminderTime by remember { mutableStateOf("") }
@@ -126,7 +132,11 @@ fun AddEditHabitScreen(
                         val now = Clock.System.now().toString()
                         when (mode) {
                             is AddEditMode.Add -> viewModel.addHabit(title, now, reminderTime)
-                            is AddEditMode.Edit -> viewModel.updateHabit(mode.habitId, title, reminderTime)
+                            is AddEditMode.Edit -> viewModel.updateHabit(
+                                mode.habitId,
+                                title,
+                                reminderTime
+                            )
                         }
                         onSaved()
                     }

@@ -7,7 +7,6 @@ import com.droidcon.habitsync.db.createDatabaseHelper
 import com.droidcon.habitsync.domain.repository.HabitLogRepository
 import com.droidcon.habitsync.domain.repository.HabitRepository
 import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
-import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -34,8 +33,6 @@ fun initKoinAndroid(appContext: Context) {
         // Repository to access habit logs (completion status)
         single { HabitLogRepository(get()) }
 
-        // Shared ViewModel for habit screen logic
-        single { HabitViewModel(get(), get()) }
     }
 
     // Start Koin with the declared modules

@@ -1,5 +1,6 @@
 package com.droidcon.habitsync.presentation.screen.habitdetail
 
+import androidx.lifecycle.ViewModel
 import com.droidcon.habitsync.domain.repository.HabitLogRepository
 import com.droidcon.habitsync.utils.StreakInfo
 import com.droidcon.habitsync.utils.calculateStreaks
@@ -19,7 +20,7 @@ import kotlinx.datetime.todayIn
 class HabitDetailViewModel(
     private val habitId: String,
     private val logRepo: HabitLogRepository
-) {
+):ViewModel() {
     // Coroutine scope tied to this ViewModel instance
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 

@@ -10,9 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
+import com.droidcon.habitsync.domain.repository.HabitRepository
 import com.droidcon.habitsync.presentation.components.FilterRow
 import com.droidcon.habitsync.presentation.components.HabitItem
 import org.koin.compose.getKoin
+import org.koin.compose.koinInject
 
 
 @Composable
@@ -22,8 +26,10 @@ fun HomeScreen(
     onDetail: (String) -> Unit,
     onDebugClick: () -> Unit,
     onShowTheme: () -> Unit,
+    habitRepository: HabitRepository = koinInject<HabitRepository>(),
+    habitLogRepository: HabitLogRepository = koinInject<HabitLogRepository>()
 ) {
-    val viewModel = getKoin().get<HabitViewModel>()
+    val viewModel =  viewModel {HabitViewModel(habitRepository, habitLogRepository)}
     val habits by viewModel.filteredHabits.collectAsState()
     val selectedFilter by viewModel.filter.collectAsState()
     var menuExpanded by remember { mutableStateOf(false) }
