@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.ui.habit_detail
+package com.droidcon.habitsync.presentation.screen.habitdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
 import kotlinx.datetime.*
 
 /**

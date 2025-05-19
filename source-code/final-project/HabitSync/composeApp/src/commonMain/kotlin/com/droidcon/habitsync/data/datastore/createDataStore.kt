@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.datastore
+package com.droidcon.habitsync.data.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory

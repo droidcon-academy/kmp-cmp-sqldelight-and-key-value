@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.viewmodel
+package com.droidcon.habitsync.domain.model
 
 /**
  * Enum class representing the different filters

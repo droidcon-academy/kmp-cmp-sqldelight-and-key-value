@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import com.droidcon.habitsync.data.db.DatabaseHelper
 import com.droidcon.habitsync.di.initKoinAndroid
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
 import com.droidcon.habitsync.navigation.HabitNavGraph
-import com.droidcon.habitsync.ui.theme.AppTheme
-import com.droidcon.habitsync.ui.theme.ThemeManager
-import com.droidcon.habitsync.viewmodel.HabitViewModel
+import com.droidcon.habitsync.presentation.screen.theme.AppTheme
+import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
+import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import org.koin.compose.getKoin
 
 class MainActivity : ComponentActivity() {
@@ -34,8 +36,8 @@ class MainActivity : ComponentActivity() {
         AppTheme(themeManager = themeManager) {
             // Retrieve other dependencies from Koin
             val habitViewModel = getKoin().get<HabitViewModel>()
-            val logRepo = getKoin().get<com.droidcon.habitsync.repository.HabitLogRepository>()
-            val dbHelper = getKoin().get<com.droidcon.habitsync.db.DatabaseHelper>()
+            val logRepo = getKoin().get<HabitLogRepository>()
+            val dbHelper = getKoin().get<DatabaseHelper>()
 
             HabitNavGraph(
                 habitViewModel =habitViewModel,

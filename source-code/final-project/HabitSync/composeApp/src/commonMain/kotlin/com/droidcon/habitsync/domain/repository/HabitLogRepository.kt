@@ -1,9 +1,9 @@
-package com.droidcon.habitsync.repository
+package com.droidcon.habitsync.domain.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import com.droidcon.habitsync.db.DatabaseHelper
+import com.droidcon.habitsync.data.db.DatabaseHelper
 import com.droidcon.habitsync.db.HabitLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

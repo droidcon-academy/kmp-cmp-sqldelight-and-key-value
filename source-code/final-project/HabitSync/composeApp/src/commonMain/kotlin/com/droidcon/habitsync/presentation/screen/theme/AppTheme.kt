@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.ui.theme
+package com.droidcon.habitsync.presentation.screen.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*

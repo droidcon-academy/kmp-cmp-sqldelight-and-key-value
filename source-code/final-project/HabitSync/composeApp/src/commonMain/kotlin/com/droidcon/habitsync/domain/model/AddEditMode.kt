@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.viewmodel
+package com.droidcon.habitsync.domain.model
 
 /**
  * Represents the screen mode for the Add/Edit Habit UI.

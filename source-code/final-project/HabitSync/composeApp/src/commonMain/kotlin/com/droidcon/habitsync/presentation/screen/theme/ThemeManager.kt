@@ -1,8 +1,8 @@
-package com.droidcon.habitsync.ui.theme
+package com.droidcon.habitsync.presentation.screen.theme
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.droidcon.habitsync.keys.THEME_MODE_KEY
+import com.droidcon.habitsync.presentation.screen.theme.keys.THEME_MODE_KEY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

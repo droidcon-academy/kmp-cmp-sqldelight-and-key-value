@@ -3,6 +3,7 @@ package com.droidcon.habitsync.db
 import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.droidcon.habitsync.data.db.DatabaseHelper
 
 fun createDatabaseHelper(context: Context): DatabaseHelper {
     // Create the SQLDelight driver with a callback to handle creation and upgrade events

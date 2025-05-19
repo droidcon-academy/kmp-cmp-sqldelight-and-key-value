@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.ui.add_edit
+package com.droidcon.habitsync.presentation.screen.addedit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,8 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.droidcon.habitsync.viewmodel.AddEditMode
-import com.droidcon.habitsync.viewmodel.HabitViewModel
+import com.droidcon.habitsync.domain.model.AddEditMode
+import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 

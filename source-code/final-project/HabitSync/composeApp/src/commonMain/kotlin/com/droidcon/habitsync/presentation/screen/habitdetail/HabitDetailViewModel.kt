@@ -1,6 +1,6 @@
-package com.droidcon.habitsync.viewmodel
+package com.droidcon.habitsync.presentation.screen.habitdetail
 
-import com.droidcon.habitsync.repository.HabitLogRepository
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
 import com.droidcon.habitsync.utils.StreakInfo
 import com.droidcon.habitsync.utils.calculateStreaks
 import kotlinx.coroutines.*

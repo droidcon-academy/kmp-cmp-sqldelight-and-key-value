@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.keys
+package com.droidcon.habitsync.presentation.screen.theme.keys
 
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey

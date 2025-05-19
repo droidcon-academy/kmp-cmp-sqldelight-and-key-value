@@ -1,17 +1,13 @@
 package com.droidcon.habitsync
 
-import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
-import com.droidcon.habitsync.datastore.createDataStore
-import com.droidcon.habitsync.db.DatabaseHelper
-import com.droidcon.habitsync.db.createDatabaseHelper
+import com.droidcon.habitsync.data.datastore.db.DatabaseHelper
 import com.droidcon.habitsync.di.initKoinIos
-import com.droidcon.habitsync.repository.HabitLogRepository
-import com.droidcon.habitsync.repository.HabitRepository
-import com.droidcon.habitsync.ui.home.MainHabitUI
-import com.droidcon.habitsync.ui.theme.ThemeManager
-import com.droidcon.habitsync.ui.theme.AppTheme
-import com.droidcon.habitsync.viewmodel.HabitViewModel
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
+import com.droidcon.habitsync.presentation.screen.home.MainHabitUI
+import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
+import com.droidcon.habitsync.presentation.screen.theme.AppTheme
+import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import org.koin.mp.KoinPlatform.getKoin
 
 // Entry point for the iOS app using Compose Multiplatform UI

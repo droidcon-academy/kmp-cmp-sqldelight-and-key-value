@@ -1,4 +1,4 @@
-package com.droidcon.habitsync.ui.debug
+package  com.droidcon.habitsync.presentation.screen.debug
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,11 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.droidcon.habitsync.db.DatabaseHelper
+import com.droidcon.habitsync.data.db.DatabaseHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-
 @Composable
 fun DebugScreen(
     db: DatabaseHelper,
@@ -89,50 +88,4 @@ fun DebugScreen(
     }
 }
 
-@Composable
-private fun BaseDebugScreen(
-    db: DatabaseHelper,
-    onBack: () -> Unit,
-    onPrintClick: () -> Unit
-) {
-    val scope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Debug Tools") })
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text("🧪 Developer Actions")
-
-            // Resets all habit and log entries in the database
-            Button(onClick = {
-                scope.launch(Dispatchers.IO) {
-                    db.db.habitQueries.deleteAll()
-                    db.db.habitLogQueries.deleteAll()
-                    println("✅ All habit and log data cleared.")
-                }
-            }) {
-                Text("Reset All Data")
-            }
-
-            // Triggers DB info loading and opens the bottom sheet
-            Button(onClick = onPrintClick) {
-                Text("Print DB Info")
-            }
-
-            // Back navigation
-            OutlinedButton(
-                onClick = onBack,
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text("← Back")
-            }
-        }
-    }
-}

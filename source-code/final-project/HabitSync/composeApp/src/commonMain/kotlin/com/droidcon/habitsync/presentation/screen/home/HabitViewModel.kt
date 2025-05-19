@@ -1,8 +1,9 @@
-package com.droidcon.habitsync.viewmodel
+package com.droidcon.habitsync.presentation.screen.home
 
 import com.droidcon.habitsync.db.Habit
-import com.droidcon.habitsync.repository.HabitLogRepository
-import com.droidcon.habitsync.repository.HabitRepository
+import com.droidcon.habitsync.domain.model.HabitFilter
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
+import com.droidcon.habitsync.domain.repository.HabitRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.datetime.Clock

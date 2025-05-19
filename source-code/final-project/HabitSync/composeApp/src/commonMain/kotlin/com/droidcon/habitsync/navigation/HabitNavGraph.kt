@@ -5,31 +5,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.droidcon.habitsync.repository.HabitLogRepository
-import com.droidcon.habitsync.ui.add_edit.AddEditHabitScreen
-import com.droidcon.habitsync.ui.debug.DebugScreen
-import com.droidcon.habitsync.ui.habit_detail.HabitDetailScreen
-import com.droidcon.habitsync.ui.home.HomeScreen
-import com.droidcon.habitsync.ui.home.ThemeSelectorSheet
-import com.droidcon.habitsync.viewmodel.AddEditMode
-import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
-import com.droidcon.habitsync.viewmodel.HabitViewModel
-import com.droidcon.habitsync.ui.theme.ThemeManager
-
-sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object AddHabit : Screen("add")
-    object EditHabit : Screen("edit/{habitId}")
-    object Detail : Screen("detail/{habitId}")
-    object Debug : Screen("debug")
-    object Theme : Screen("theme")
-}
+import com.droidcon.habitsync.data.db.DatabaseHelper
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
+import com.droidcon.habitsync.presentation.screen.addedit.AddEditHabitScreen
+import com.droidcon.habitsync.presentation.screen.habitdetail.HabitDetailScreen
+import com.droidcon.habitsync.presentation.screen.home.HomeScreen
+import com.droidcon.habitsync.domain.model.AddEditMode
+import com.droidcon.habitsync.presentation.components.ThemeSelectorSheet
+import com.droidcon.habitsync.presentation.screen.debug.DebugScreen
+import com.droidcon.habitsync.presentation.screen.habitdetail.HabitDetailViewModel
+import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
+import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
 
 @Composable
 fun HabitNavGraph(
     habitViewModel: HabitViewModel,
     logRepo: HabitLogRepository,
-    dbHelper: com.droidcon.habitsync.db.DatabaseHelper,
+    dbHelper: DatabaseHelper,
     themeManager: ThemeManager,
     navController: NavHostController = rememberNavController()
 ) {
@@ -55,7 +47,7 @@ fun HabitNavGraph(
             )
         }
 
-        composable("edit/{habitId}") { backStackEntry ->
+        composable(Screen.EditHabit.route) { backStackEntry ->
             val habitId = backStackEntry.arguments?.getString("habitId") ?: return@composable
             AddEditHabitScreen(
                 viewModel = habitViewModel,
@@ -64,7 +56,7 @@ fun HabitNavGraph(
             )
         }
 
-        composable("detail/{habitId}") { backStackEntry ->
+        composable(Screen.Detail.route) { backStackEntry ->
             val habitId = backStackEntry.arguments?.getString("habitId") ?: return@composable
             val detailViewModel = HabitDetailViewModel(habitId, logRepo)
             HabitDetailScreen(

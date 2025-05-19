@@ -1,37 +1,32 @@
-package com.droidcon.habitsync.ui.home
+package com.droidcon.habitsync.presentation.screen.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.droidcon.habitsync.db.Habit
-import com.droidcon.habitsync.repository.HabitLogRepository
-import com.droidcon.habitsync.ui.add_edit.AddEditHabitScreen
-import com.droidcon.habitsync.ui.debug.DebugScreen
-import com.droidcon.habitsync.ui.habit_detail.HabitDetailScreen
-import com.droidcon.habitsync.ui.theme.ThemeManager
-import com.droidcon.habitsync.utils.formatDateTimeKMP
-import com.droidcon.habitsync.viewmodel.AddEditMode
-import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
-import com.droidcon.habitsync.viewmodel.HabitFilter
-import com.droidcon.habitsync.viewmodel.HabitViewModel
+import com.droidcon.habitsync.data.db.DatabaseHelper
+import com.droidcon.habitsync.domain.repository.HabitLogRepository
+import com.droidcon.habitsync.presentation.screen.addedit.AddEditHabitScreen
+import com.droidcon.habitsync.presentation.screen.habitdetail.HabitDetailScreen
+import com.droidcon.habitsync.presentation.screen.theme.ThemeManager
+import com.droidcon.habitsync.domain.model.AddEditMode
+import com.droidcon.habitsync.presentation.screen.habitdetail.HabitDetailViewModel
+import com.droidcon.habitsync.presentation.components.FilterRow
+import com.droidcon.habitsync.presentation.components.HabitItem
+import com.droidcon.habitsync.presentation.screen.debug.DebugScreen
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainHabitUI(
     habitViewModel: HabitViewModel,
     logRepo: HabitLogRepository,
-    dbHelper: com.droidcon.habitsync.db.DatabaseHelper,
+    dbHelper: DatabaseHelper,
     themeManager: ThemeManager
 ) {
     // State to control which screen is currently shown
@@ -176,114 +171,7 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun FilterRow(selected: HabitFilter, onSelect: (HabitFilter) -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        // Show all filter types as buttons
-        HabitFilter.values().forEach { filter ->
-            OutlinedButton(
-                onClick = { onSelect(filter) },
-                colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = if (selected == filter)
-                        MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                    else
-                        MaterialTheme.colors.surface,
-                    contentColor = if (selected == filter)
-                        MaterialTheme.colors.primary
-                    else
-                        MaterialTheme.colors.onSurface
-                ),
-                elevation = ButtonDefaults.elevation(defaultElevation = 2.dp)
-            ) {
-                Text(filter.displayName)
-            }
-        }
-    }
-}
 
-@Composable
-fun HabitItem(
-    habit: Habit,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit,
-    onClick: () -> Unit
-) {
-    Card(
-        elevation = 4.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-    ) {
-        Column(Modifier.fillMaxWidth()) {
-            Row(
-                Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(habit.title, style = MaterialTheme.typography.subtitle1)
-                    Text(
-                        "Created: ${formatDateTimeKMP(habit.createdAt)}",
-                        style = MaterialTheme.typography.caption
-                    )
-                }
-                Row {
-                    IconButton(onClick = onEdit) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit")
-                    }
-                    IconButton(onClick = onDelete) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete")
-                    }
-                }
-            }
 
-            Divider(
-                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
-                thickness = 2.dp,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
 
-@Composable
-fun ThemeSelectorSheet(
-    themeManager: ThemeManager,
-    onDismiss: () -> Unit
-) {
-    val theme by themeManager.themeFlow.collectAsState(initial = "system")
-    val scope = rememberCoroutineScope()
 
-    Column(Modifier.background(MaterialTheme.colors.surface).fillMaxSize()) {
-        Text("Choose Theme", style = MaterialTheme.typography.h6)
-        Spacer(Modifier.height(16.dp))
-
-        // Options: Light, Dark, System
-        listOf("light", "dark", "system").forEach { mode ->
-            OutlinedButton(
-                onClick = {
-                    scope.launch {
-                        themeManager.setTheme(mode)
-                        onDismiss()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (theme == mode) "✓ ${mode.capitalize()}" else mode.capitalize())
-            }
-            Spacer(Modifier.height(8.dp))
-        }
-
-        Spacer(Modifier.height(8.dp))
-        OutlinedButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-            Text("Cancel")
-        }
-    }
-}
