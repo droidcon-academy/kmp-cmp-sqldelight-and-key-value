@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.droidcon.habitsync.domain.model.AddEditMode
 import com.droidcon.habitsync.domain.repository.HabitLogRepository
 import com.droidcon.habitsync.domain.repository.HabitRepository
+import com.droidcon.habitsync.presentation.components.timepicker.TimePickerSheetContent
 import com.droidcon.habitsync.presentation.screen.home.HabitViewModel
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -175,99 +176,6 @@ fun AddEditHabitScreen(
             }
         }
 
-    }
-}
-
-
-@Composable
-fun TimePickerSheetContent(
-    hour: Int,
-    minute: Int,
-    onHourSelected: (Int) -> Unit,
-    onMinuteSelected: (Int) -> Unit,
-    onDone: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .heightIn(min = 300.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Select Time", style = MaterialTheme.typography.h6)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Top
-        ) {
-            ScrollableNumberPicker(
-                title = "Hour",
-                values = (0..23).toList(),
-                selected = hour,
-                onSelected = onHourSelected
-            )
-            Spacer(modifier = Modifier.width(24.dp)) // spacing between columns
-            ScrollableNumberPicker(
-                title = "Minute",
-                values = (0..59).toList(),
-                selected = minute,
-                onSelected = onMinuteSelected
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onDone) {
-            Text("Done")
-        }
-    }
-}
-
-
-@Composable
-fun ScrollableNumberPicker(
-    title: String,
-    values: List<Int>,
-    selected: Int,
-    onSelected: (Int) -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(100.dp)
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.subtitle2,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .height(150.dp)
-
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(values) { value ->
-                    val isSelected = value == selected
-                    Text(
-                        text = value.toString().padStart(2, '0'),
-                        style = if (isSelected) MaterialTheme.typography.h6 else MaterialTheme.typography.body2,
-                        color = if (isSelected)
-                            MaterialTheme.colors.primary
-                        else
-                            MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-                        modifier = Modifier
-                            .clickable { onSelected(value) }
-                            .padding(vertical = 6.dp)
-                    )
-                }
-            }
-        }
     }
 }
 
