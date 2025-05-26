@@ -15,12 +15,15 @@ compose-multiplatform = "1.7.3"
 junit = "4.13.2"
 kotlin = "2.1.20"
 datastore = "1.1.1"
+# SQLDelight Dependencies
 sqldelight = "2.0.2"
 coroutinesExtensions = "2.0.2"
 statelyCommon = "2.0.5"
-koin = "3.6.0-alpha3"
-koinCompose = "1.2.0-alpha3"
+kotlinx-datetime = "0.5.0"
+koin = "3.5.0"
+koin-compose = "1.0.3"
 navigationCompose = "2.7.0-alpha07"
+lifecycleViewmodelCompose = "2.8.0"
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -40,10 +43,13 @@ android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = 
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "coroutinesExtensions" }
-stately-common = { module = "co.touchlab:stately-common", version.ref = "statelyCommon" }
+stately-common = { module = "co.touchlab:stately-common", version.ref = "statelyCommon" } # (needed by SQLDeligt)
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

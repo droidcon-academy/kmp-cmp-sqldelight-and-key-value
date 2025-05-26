@@ -41,7 +41,7 @@ kotlin {
                 implementation(compose.preview)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.android.driver)
-            }
+        }
 
         commonMain.dependencies {
                 implementation(compose.runtime)
@@ -56,9 +56,11 @@ kotlin {
                 api(libs.datastore)
                 implementation(libs.coroutines.extensions)
                 implementation(libs.stately.common)
-                api(libs.koin.core)
+                implementation(libs.kotlinx.datetime)
+                implementation(libs.koin.core)
                 implementation(libs.koin.compose)
                 implementation(libs.navigation.compose)
+                implementation(libs.lifecycle.viewmodel.compose)
         }
 
         iosMain.dependencies {
@@ -100,8 +102,18 @@ dependencies {
 
 sqldelight {
     databases {
-        create("AppDatabase") {
+        create("HabitDatabase") {
             packageName.set("com.droidcon.habitsync.db")
+
+            schemaOutputDirectory.set(
+                file("src/commonMain/sqldelight/com/droidcon/habitsync/db/migrations")
+            )
+
+            migrationOutputDirectory.set(
+                file("src/commonMain/sqldelight/com/droidcon/habitsync/db/migrations")
+            )
         }
     }
 }
+
+
