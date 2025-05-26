@@ -8,6 +8,7 @@ import com.droidcon.habitsync.db.Habit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * Repository for managing Habit data access.
@@ -19,31 +20,35 @@ class HabitRepository(private val db: DatabaseHelper) {
      *  Returns a reactive stream of all habits.
      * This updates automatically when the table data changes.
      */
-    fun getAllHabits(): Flow<List<Habit>> =
-        db.db.habitQueries.selectAll()
-            .asFlow()
-            .mapToList(Dispatchers.IO)
+    fun getAllHabits(): Flow<List<Habit>> {
+        val dummyHabits = listOf(
+            Habit(id = "1", title = "Drink Water", createdAt = "2023-01-01", reminderTime = "08:00",0),
+            Habit(id = "2", title = "Meditate", createdAt = "2023-01-02", reminderTime = "07:00",0),
+            Habit(id = "3", title = "Read Book", createdAt = "2023-01-03", reminderTime = "21:00",0)
+        )
+        return flowOf(dummyHabits)
+    }
 
     /**
      *  Returns a reactive stream of a specific habit by its ID.
      * Returns null if no habit is found.
      */
-    fun getHabitById(id: String): Flow<Habit?> =
-        db.db.habitQueries.selectById(id)
-            .asFlow()
-            .mapToOneOrNull(Dispatchers.IO)
+    fun getHabitById(id: String): Flow<Habit?> {
+        val dummyHabit = Habit(
+            id = id,
+            title = "Dummy Habit",
+            createdAt = "2023-01-01",
+            reminderTime = "09:00",
+            0
+        )
+        return flowOf(dummyHabit)
+    }
 
     /**
      *  Inserts a new habit into the database.
      */
     suspend fun insert(habit: Habit) {
-        db.db.habitQueries.insertHabit(
-            id = habit.id,
-            title = habit.title,
-            createdAt = habit.createdAt,
-            reminderTime = habit.reminderTime,
-            isArchived = habit.isArchived
-        )
+
     }
 
     /**
@@ -51,18 +56,12 @@ class HabitRepository(private val db: DatabaseHelper) {
      * Matching is done by ID.
      */
     suspend fun update(habit: Habit) {
-        db.db.habitQueries.updateHabit(
-            title = habit.title,
-            reminderTime = habit.reminderTime,
-            isArchived = habit.isArchived,
-            id = habit.id
-        )
+
     }
 
     /**
      *  Deletes a habit by ID.
      */
     suspend fun delete(id: String) {
-        db.db.habitQueries.deleteHabit(id)
     }
 }

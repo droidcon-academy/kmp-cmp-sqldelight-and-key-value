@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.droidcon.habitsync.presentation.screen.theme.keys.THEME_MODE_KEY
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 /**
@@ -18,9 +19,7 @@ class ThemeManager(private val prefs: DataStore<Preferences>) {
      * A Flow that emits the current theme preference.
      * Falls back to "system" if no theme is explicitly set.
      */
-    val themeFlow: Flow<String> = prefs.data.map {
-        it[THEME_MODE_KEY] ?: "system"
-    }
+    val themeFlow: Flow<String> = flow { "system" }
 
     /**
      * Saves the given theme mode ("light", "dark", or "system") into DataStore.
@@ -28,10 +27,6 @@ class ThemeManager(private val prefs: DataStore<Preferences>) {
      * @param value The selected theme mode.
      */
     suspend fun setTheme(value: String) {
-        prefs.updateData {
-            it.toMutablePreferences().apply {
-                this[THEME_MODE_KEY] = value
-            }
-        }
+
     }
 }
